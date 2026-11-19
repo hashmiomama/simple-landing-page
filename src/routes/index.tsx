@@ -1,119 +1,89 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, CalendarCheck, Sparkles, Users } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, Compass, Mountain, UsersRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE } from "@/lib/app-config";
+import { pageMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Tidewell — Calmer weeks for small teams" },
-      {
-        name: "description",
-        content: "Tidewell helps small teams plan calmer, clearer weeks in one simple place.",
-      },
-      { property: "og:title", content: "Tidewell — Calmer weeks for small teams" },
-      {
-        property: "og:description",
-        content: "Tidewell helps small teams plan calmer, clearer weeks in one simple place.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => ({ meta: pageMeta(APP_NAME, APP_DESCRIPTION) }),
   component: Index,
 });
 
-const features = [
+const pillars = [
   {
-    icon: CalendarCheck,
-    title: "Plan the week",
-    text: "Lay out priorities on Monday and see them through by Friday.",
+    icon: Compass,
+    title: "Find real opportunities",
+    text: "Internships, scholarships, hackathons and more — checked before they reach you.",
+    tone: "bg-lavender",
   },
   {
-    icon: Users,
-    title: "Share the load",
-    text: "Everyone sees who owns what, without the endless check-ins.",
+    icon: Mountain,
+    title: "Explore on your own",
+    text: "Solo experiences for when you'd rather go at your own pace.",
+    tone: "bg-accent",
   },
   {
-    icon: Sparkles,
-    title: "Keep it light",
-    text: "No setup, no clutter. Just the essentials, beautifully simple.",
+    icon: UsersRound,
+    title: "Plan things together",
+    text: "Small, shared-interest activities without the pressure of a social feed.",
+    tone: "bg-lavender-soft",
   },
 ];
 
 function Index() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <a href="/" className="font-display text-2xl font-semibold">
-          Tidewell<span className="text-primary">.</span>
-        </a>
-        <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-          <a href="#features" className="hidden transition-colors hover:text-foreground sm:inline">
-            Features
-          </a>
-          <Button size="sm" className="rounded-full px-4">
-            Get started
-          </Button>
-        </nav>
-      </header>
-
-      <main>
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 bg-glow" aria-hidden />
-          <div className="relative mx-auto max-w-3xl px-6 pb-24 pt-20 text-center sm:pt-28">
-            <p className="animate-rise mb-6 inline-block rounded-full border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground">
-              Now open for early access
-            </p>
-            <h1 className="animate-rise text-5xl font-semibold leading-[1.05] [animation-delay:80ms] sm:text-7xl">
-              Calmer weeks for <em className="text-primary">small teams</em>
-            </h1>
-            <p className="animate-rise mx-auto mt-6 max-w-xl text-lg text-muted-foreground [animation-delay:160ms]">
-              Tidewell brings your plans, people and priorities into one quiet place — so the
-              work gets done without the noise.
-            </p>
-            <div className="animate-rise mt-10 flex flex-col items-center justify-center gap-3 [animation-delay:240ms] sm:flex-row">
-              <Button size="xl" className="shadow-soft">
-                Start for free <ArrowRight />
-              </Button>
-              <Button size="xl" variant="ghost" asChild>
-                <a href="#features">See how it works</a>
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        <section id="features" className="mx-auto max-w-6xl px-6 pb-28">
-          <div className="grid gap-6 md:grid-cols-3">
-            {features.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="rounded-2xl border bg-card p-8 shadow-soft">
-                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-primary">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="text-xl font-semibold">{title}</h3>
-                <p className="mt-2 text-muted-foreground">{text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-6 pb-28">
-          <div className="rounded-3xl bg-foreground px-8 py-16 text-center text-background">
-            <h2 className="text-4xl font-semibold sm:text-5xl">Ready for a quieter Monday?</h2>
-            <p className="mx-auto mt-4 max-w-md opacity-70">
-              Join the early access list and be first to try Tidewell.
-            </p>
-            <Button size="xl" className="mt-8">
-              Join early access
+    <>
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-wash" aria-hidden />
+        <div className="relative mx-auto max-w-4xl px-5 pb-20 pt-16 text-center sm:px-8 sm:pb-28 sm:pt-24">
+          <p className="animate-rise mx-auto mb-6 inline-block rounded-full border bg-card px-4 py-1.5 text-sm text-muted-foreground">
+            For young adults in Pakistan
+          </p>
+          <h1 className="animate-rise text-4xl font-extrabold leading-[1.08] [animation-delay:80ms] sm:text-6xl">
+            {APP_TAGLINE}
+          </h1>
+          <p className="animate-rise mx-auto mt-6 max-w-xl text-lg text-muted-foreground [animation-delay:160ms]">
+            {APP_DESCRIPTION}
+          </p>
+          <div className="animate-rise mt-10 flex flex-col items-center justify-center gap-3 [animation-delay:240ms] sm:flex-row">
+            <Button size="lg" asChild>
+              <Link to="/register">
+                Create your account <ArrowRight aria-hidden />
+              </Link>
+            </Button>
+            <Button size="lg" variant="ghost" asChild>
+              <Link to="/opportunities">Browse opportunities</Link>
             </Button>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
-      <footer className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 border-t px-6 py-8 text-sm text-muted-foreground sm:flex-row">
-        <span>© {new Date().getFullYear()} Tidewell</span>
-        <span>Made with care.</span>
+      <section aria-labelledby="pillars-heading" className="mx-auto w-full max-w-6xl px-5 pb-24 sm:px-8">
+        <h2 id="pillars-heading" className="sr-only">
+          What you can do
+        </h2>
+        <div className="grid gap-5 md:grid-cols-3">
+          {pillars.map(({ icon: Icon, title, text, tone }) => (
+            <div key={title} className="rounded-3xl border bg-card p-7 shadow-soft">
+              <div className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl ${tone}`}>
+                <Icon className="h-5 w-5" aria-hidden />
+              </div>
+              <h3 className="text-lg font-bold">{title}</h3>
+              <p className="mt-2 text-muted-foreground">{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <footer className="border-t">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-5 py-8 text-sm text-muted-foreground sm:flex-row sm:px-8">
+          <span>
+            © {new Date().getFullYear()} {APP_NAME}
+          </span>
+          <span>Socialise on your terms.</span>
+        </div>
       </footer>
-    </div>
+    </>
   );
 }

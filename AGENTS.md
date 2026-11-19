@@ -31,4 +31,9 @@ use the editor.
 
 ## Project rules
 
-- Landing page lives in src/routes/index.tsx; all colors, fonts and shadows come from tokens in src/styles.css so the look can be changed in one place.
+- All colors, fonts and shadows come from tokens in src/styles.css so the look can be changed in one place.
+- Feature code lives in src/features/<feature>/ (small components, schemas, pure helpers); shared layout pieces in src/components/layout/.
+- The Supabase client reads VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY and may be null; call requireSupabase() from src/lib/backend.ts so a missing connection shows a friendly error instead of crashing.
+- Auth state comes from AuthProvider (src/features/auth/auth-provider.tsx); roles are read from user_roles and are UI gating only, since RLS is the real protection.
+- Protected screens go under src/routes/_authenticated/ (RequireAuth) and admin screens under src/routes/_authenticated/_admin/ (RequireRole admin); login/register pages wrap content in RedirectIfAuthenticated.
+- The app name lives only in src/lib/app-config.ts because it is still undecided.
