@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.18"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       activities: {
@@ -1096,40 +1121,49 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          budget_preference: Database["public"]["Enums"]["budget_preference"]
           city: string | null
           country: string | null
           created_at: string
           currency: string | null
           max_budget: number | null
+          onboarding_completed: boolean
           opportunity_category_slugs: string[]
           personality_type: string | null
           social_comfort: Database["public"]["Enums"]["social_comfort"] | null
           updated_at: string
           user_id: string
+          wants_online: boolean
         }
         Insert: {
+          budget_preference?: Database["public"]["Enums"]["budget_preference"]
           city?: string | null
           country?: string | null
           created_at?: string
           currency?: string | null
           max_budget?: number | null
+          onboarding_completed?: boolean
           opportunity_category_slugs?: string[]
           personality_type?: string | null
           social_comfort?: Database["public"]["Enums"]["social_comfort"] | null
           updated_at?: string
           user_id: string
+          wants_online?: boolean
         }
         Update: {
+          budget_preference?: Database["public"]["Enums"]["budget_preference"]
           city?: string | null
           country?: string | null
           created_at?: string
           currency?: string | null
           max_budget?: number | null
+          onboarding_completed?: boolean
           opportunity_category_slugs?: string[]
           personality_type?: string | null
           social_comfort?: Database["public"]["Enums"]["social_comfort"] | null
           updated_at?: string
           user_id?: string
+          wants_online?: boolean
         }
         Relationships: [
           {
@@ -1221,10 +1255,53 @@ export type Database = {
     }
     Functions: {
       bootstrap_account: { Args: { account_id: string }; Returns: undefined }
+      get_dashboard_summary: {
+        Args: never
+        Returns: {
+          saved_count: number
+          saved_due_in_14_days_count: number
+          upcoming_deadlines: Json
+        }[]
+      }
+      get_recommended_opportunities: {
+        Args: { p_limit?: number }
+        Returns: {
+          budget_score: number
+          category_score: number
+          category_slug: string
+          city: string
+          cost_or_funding: string
+          country: string
+          cover_url: string
+          created_at: string
+          deadline: string
+          description: string
+          eligibility: string
+          ends_at: string
+          format: Database["public"]["Enums"]["event_format"]
+          id: string
+          interest_score: number
+          last_verified_at: string
+          location: string
+          location_score: number
+          organisation_id: string
+          organisation_name: string
+          recency_score: number
+          social_comfort_score: number
+          source_url: string
+          starts_at: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          title: string
+          total_score: number
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: { role: Database["public"]["Enums"]["app_role"]; user_id: string }
         Returns: boolean
       }
+      is_username_available: { Args: { p_username: string }; Returns: boolean }
     }
     Enums: {
       activity_status:
@@ -1243,6 +1320,7 @@ export type Database = {
         | "accepted"
         | "rejected"
         | "withdrawn"
+      budget_preference: "free_only" | "low" | "any"
       category_group: "academic" | "professional" | "personal_development"
       event_format: "online" | "physical" | "hybrid"
       identity_status: "pending" | "verified" | "rejected" | "expired"
@@ -1250,7 +1328,7 @@ export type Database = {
       report_status: "open" | "investigating" | "resolved" | "dismissed"
       review_status: "pending" | "approved" | "rejected" | "archived"
       reviewer_kind: "ai" | "admin"
-      social_comfort: "solo" | "small_group" | "large_group" | "flexible"
+      social_comfort: "quiet" | "small_group" | "social" | "flexible"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1376,6 +1454,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       activity_status: [
@@ -1396,6 +1477,7 @@ export const Constants = {
         "rejected",
         "withdrawn",
       ],
+      budget_preference: ["free_only", "low", "any"],
       category_group: ["academic", "professional", "personal_development"],
       event_format: ["online", "physical", "hybrid"],
       identity_status: ["pending", "verified", "rejected", "expired"],
@@ -1403,7 +1485,7 @@ export const Constants = {
       report_status: ["open", "investigating", "resolved", "dismissed"],
       review_status: ["pending", "approved", "rejected", "archived"],
       reviewer_kind: ["ai", "admin"],
-      social_comfort: ["solo", "small_group", "large_group", "flexible"],
+      social_comfort: ["quiet", "small_group", "social", "flexible"],
     },
   },
 } as const
