@@ -42,6 +42,7 @@ import { Route as AuthenticatedMyExperienceRecommendationsIdRouteImport } from '
 import { Route as AuthenticatedMySubmissionsIdRouteImport } from './routes/_authenticated/my-submissions_.$id'
 import { Route as AuthenticatedOrganisationListingsRouteImport } from './routes/_authenticated/organisation.listings'
 import { Route as AuthenticatedOrganisationRegisterRouteImport } from './routes/_authenticated/organisation.register'
+import { Route as AuthenticatedProfilePointsRouteImport } from './routes/_authenticated/profile_.points'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings_.notifications'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminSplatRouteImport } from './routes/_authenticated/_admin/admin.$'
@@ -225,6 +226,12 @@ const AuthenticatedOrganisationRegisterRoute =
     path: '/organisation/register',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedProfilePointsRoute =
+  AuthenticatedProfilePointsRouteImport.update({
+    id: '/profile_/points',
+    path: '/profile/points',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsNotificationsRoute =
   AuthenticatedSettingsNotificationsRouteImport.update({
     id: '/settings_/notifications',
@@ -306,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
+  '/profile/points': typeof AuthenticatedProfilePointsRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
   '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
@@ -346,6 +354,7 @@ export interface FileRoutesByTo {
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
+  '/profile/points': typeof AuthenticatedProfilePointsRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
   '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
@@ -390,6 +399,7 @@ export interface FileRoutesById {
   '/_authenticated/my-submissions_/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/_authenticated/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/_authenticated/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
+  '/_authenticated/profile_/points': typeof AuthenticatedProfilePointsRoute
   '/_authenticated/settings_/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/_admin/admin/$': typeof AuthenticatedAdminAdminSplatRoute
   '/_authenticated/_admin/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
@@ -433,6 +443,7 @@ export interface FileRouteTypes {
     | '/my-submissions/$id'
     | '/organisation/listings'
     | '/organisation/register'
+    | '/profile/points'
     | '/settings/notifications'
     | '/admin/$'
     | '/admin/audit-log'
@@ -473,6 +484,7 @@ export interface FileRouteTypes {
     | '/my-submissions/$id'
     | '/organisation/listings'
     | '/organisation/register'
+    | '/profile/points'
     | '/settings/notifications'
     | '/admin/$'
     | '/admin/audit-log'
@@ -516,6 +528,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-submissions_/$id'
     | '/_authenticated/organisation/listings'
     | '/_authenticated/organisation/register'
+    | '/_authenticated/profile_/points'
     | '/_authenticated/settings_/notifications'
     | '/_authenticated/_admin/admin/$'
     | '/_authenticated/_admin/admin/audit-log'
@@ -775,6 +788,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrganisationRegisterRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/profile_/points': {
+      id: '/_authenticated/profile_/points'
+      path: '/profile/points'
+      fullPath: '/profile/points'
+      preLoaderRoute: typeof AuthenticatedProfilePointsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings_/notifications': {
       id: '/_authenticated/settings_/notifications'
       path: '/settings/notifications'
@@ -898,6 +918,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMySubmissionsIdRoute: typeof AuthenticatedMySubmissionsIdRoute
   AuthenticatedOrganisationListingsRoute: typeof AuthenticatedOrganisationListingsRoute
   AuthenticatedOrganisationRegisterRoute: typeof AuthenticatedOrganisationRegisterRoute
+  AuthenticatedProfilePointsRoute: typeof AuthenticatedProfilePointsRoute
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
 }
 
@@ -925,6 +946,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedOrganisationListingsRoute,
   AuthenticatedOrganisationRegisterRoute:
     AuthenticatedOrganisationRegisterRoute,
+  AuthenticatedProfilePointsRoute: AuthenticatedProfilePointsRoute,
   AuthenticatedSettingsNotificationsRoute:
     AuthenticatedSettingsNotificationsRoute,
 }

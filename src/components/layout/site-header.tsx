@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   Bookmark,
@@ -23,6 +24,7 @@ import {
 import { useAuth } from "@/features/auth/auth-provider";
 import { ROLE_LABELS } from "@/features/auth/roles";
 import { NotificationBell } from "@/features/notifications/inbox";
+import { myPoints } from "@/features/points/data";
 import { APP_NAME } from "@/lib/app-config";
 
 export function SiteHeader() {
@@ -58,7 +60,8 @@ export function SiteHeader() {
 }
 
 function AccountArea() {
-  const { status, profile, role, hasRole } = useAuth();
+  const { status, user, profile, role, hasRole } = useAuth();
+  const points = useQuery(myPoints(user?.id));
 
   if (status === "loading") {
     return <div className="h-9 w-24 animate-pulse rounded-full bg-muted" aria-hidden />;
@@ -128,7 +131,10 @@ function AccountArea() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 rounded-2xl">
           <DropdownMenuLabel className="flex items-center justify-between gap-2">
-            <span className="truncate">{name}</span>
+            <span className="flex min-w-0 flex-wrap items-center gap-1.5">
+              <span className="truncate">{name}</span>
+              {points.data && <Badge variant="outline">{points.data.level_name}</Badge>}
+            </span>
             {role && <Badge variant="secondary">{ROLE_LABELS[role]}</Badge>}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -141,6 +147,9 @@ function AccountArea() {
             <Link to="/profile">
               <UserRound className="h-4 w-4" aria-hidden /> My profile
             </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/profile/points">My points</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/profile" hash="preferences">

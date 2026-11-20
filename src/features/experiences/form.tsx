@@ -207,9 +207,14 @@ function ExperienceForm({
                 : "A moderator will review the recommendation before it appears in Experiences."
           }
           action={
-            <Button asChild className="bg-primary-strong">
-              <Link to="/my-experience-recommendations">My experience recommendations</Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button asChild className="bg-primary-strong">
+                <Link to="/my-experience-recommendations">My experience recommendations</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/profile/points">My points</Link>
+              </Button>
+            </div>
           }
         />
       </Page>
@@ -245,6 +250,11 @@ function ExperienceForm({
         </Button>
       }
     >
+      {!item && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Earn 10 points when your submission is approved.
+        </p>
+      )}
       <form
         className="max-w-3xl"
         noValidate

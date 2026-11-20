@@ -12,6 +12,7 @@ import { DashboardExperiences } from "@/features/experiences/dashboard-experienc
 import { opportunityCategories } from "@/features/onboarding/data";
 import { ProfileCompletionCard } from "@/features/profile/profile-completion-card";
 import { applications, upcomingDeadlines } from "@/features/planning/data";
+import { myPoints } from "@/features/points/data";
 
 import {
   dashboardSummary,
@@ -53,6 +54,7 @@ function DashboardContent({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const summary = useQuery(dashboardSummary(userId));
+  const points = useQuery(myPoints(userId));
   const tracked = useQuery(applications(userId));
   const deadlines = upcomingDeadlines(summary.data?.deadlines ?? [], tracked.data ?? []);
   const recommended = useQuery(recommendations(userId));
@@ -132,6 +134,20 @@ function DashboardContent({
       </section>
 
       <ProfileCompletionCard userId={userId} />
+
+      {points.isSuccess && (
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border bg-card px-5 py-4 shadow-soft">
+          <div>
+            <h2 className="font-semibold">Your points</h2>
+            <p className="text-sm text-muted-foreground">
+              {points.data.total_points} points · {points.data.level_name}
+            </p>
+          </div>
+          <Button size="sm" variant="outline" asChild>
+            <Link to="/profile/points">My points</Link>
+          </Button>
+        </section>
+      )}
 
       {summary.isPending ? (
         <div role="status" className="space-y-5">

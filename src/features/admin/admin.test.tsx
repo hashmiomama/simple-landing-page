@@ -1,4 +1,4 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -49,13 +49,14 @@ describe("Phase 4 administrator workflow", () => {
   });
 
   it("shows the 403 view and hides admin navigation for a normal member", () => {
+    const queryClient = new QueryClient();
     render(
-      <>
+      <QueryClientProvider client={queryClient}>
         <SiteHeader />
         <RequireRole role="admin">
           <p>Admin content</p>
         </RequireRole>
-      </>,
+      </QueryClientProvider>,
     );
     expect(screen.getByText("Error 403")).toBeInTheDocument();
     expect(screen.queryByText("Admin content")).not.toBeInTheDocument();

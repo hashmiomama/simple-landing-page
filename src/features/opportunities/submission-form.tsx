@@ -178,11 +178,16 @@ function SubmissionFields({
               : "Listings are reviewed before they appear in the public directory."
           }
           action={
-            <Button asChild className="bg-primary-strong">
-              <Link to={existing?.organisation_id ? "/organisation/listings" : "/my-submissions"}>
-                View your listings
-              </Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button asChild className="bg-primary-strong">
+                <Link to={existing?.organisation_id ? "/organisation/listings" : "/my-submissions"}>
+                  View your listings
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/profile/points">My points</Link>
+              </Button>
+            </div>
           }
         />
       </Page>
@@ -226,6 +231,11 @@ function SubmissionFields({
         </Button>
       }
     >
+      {!existing && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Earn 10 points when your submission is approved.
+        </p>
+      )}
       {existing && (resubmitting || existing.status === "rejected") && (
         <div className="mb-4 max-w-3xl">
           <ReviewNotes id={existing.id} userId={userId} />
