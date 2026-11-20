@@ -41,54 +41,94 @@ export type Database = {
     Tables: {
       activities: {
         Row: {
+          cancellation_reason: string | null
           capacity: number | null
           city: string | null
+          coordinator_id: string
+          cover_url: string | null
           created_at: string
           created_by: string
           description: string
           ends_at: string | null
+          estimated_budget: number
+          experience_level: string
           format: Database["public"]["Enums"]["event_format"]
           id: string
           interest_slug: string
           location: string | null
+          min_participants: number
+          participation: string
+          proposed_dates: string[]
+          public_venue_confirmed: boolean
+          social_level: string
           starts_at: string | null
           status: Database["public"]["Enums"]["activity_status"]
           title: string
           updated_at: string
+          venue_address: string | null
         }
         Insert: {
+          cancellation_reason?: string | null
           capacity?: number | null
           city?: string | null
+          coordinator_id: string
+          cover_url?: string | null
           created_at?: string
           created_by: string
           description: string
           ends_at?: string | null
+          estimated_budget?: number
+          experience_level?: string
           format: Database["public"]["Enums"]["event_format"]
           id?: string
           interest_slug: string
           location?: string | null
+          min_participants?: number
+          participation?: string
+          proposed_dates?: string[]
+          public_venue_confirmed?: boolean
+          social_level?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["activity_status"]
           title: string
           updated_at?: string
+          venue_address?: string | null
         }
         Update: {
+          cancellation_reason?: string | null
           capacity?: number | null
           city?: string | null
+          coordinator_id?: string
+          cover_url?: string | null
           created_at?: string
           created_by?: string
           description?: string
           ends_at?: string | null
+          estimated_budget?: number
+          experience_level?: string
           format?: Database["public"]["Enums"]["event_format"]
           id?: string
           interest_slug?: string
           location?: string | null
+          min_participants?: number
+          participation?: string
+          proposed_dates?: string[]
+          public_venue_confirmed?: boolean
+          social_level?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["activity_status"]
           title?: string
           updated_at?: string
+          venue_address?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "activities_coordinator_id_fkey"
+            columns: ["coordinator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "activities_created_by_fkey"
             columns: ["created_by"]
@@ -111,6 +151,8 @@ export type Database = {
           comment: string | null
           created_at: string
           rating: number
+          report_issue: boolean
+          share_author: boolean
           updated_at: string
           user_id: string
         }
@@ -119,6 +161,8 @@ export type Database = {
           comment?: string | null
           created_at?: string
           rating: number
+          report_issue?: boolean
+          share_author?: boolean
           updated_at?: string
           user_id: string
         }
@@ -127,6 +171,8 @@ export type Database = {
           comment?: string | null
           created_at?: string
           rating?: number
+          report_issue?: boolean
+          share_author?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -145,6 +191,7 @@ export type Database = {
           activity_id: string
           body: string
           created_at: string
+          deleted_at: string | null
           id: string
           updated_at: string
           user_id: string
@@ -153,6 +200,7 @@ export type Database = {
           activity_id: string
           body: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
           updated_at?: string
           user_id: string
@@ -161,6 +209,7 @@ export type Database = {
           activity_id?: string
           body?: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
           updated_at?: string
           user_id?: string
@@ -171,6 +220,13 @@ export type Database = {
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_messages_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_summaries"
             referencedColumns: ["id"]
           },
           {
@@ -186,6 +242,8 @@ export type Database = {
         Row: {
           activity_id: string
           created_at: string
+          id: string
+          request_message: string | null
           status: Database["public"]["Enums"]["participant_status"]
           updated_at: string
           user_id: string
@@ -193,6 +251,8 @@ export type Database = {
         Insert: {
           activity_id: string
           created_at?: string
+          id?: string
+          request_message?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           updated_at?: string
           user_id: string
@@ -200,6 +260,8 @@ export type Database = {
         Update: {
           activity_id?: string
           created_at?: string
+          id?: string
+          request_message?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           updated_at?: string
           user_id?: string
@@ -210,6 +272,13 @@ export type Database = {
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_participants_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_summaries"
             referencedColumns: ["id"]
           },
           {
@@ -844,6 +913,7 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          kind: string
           question: string
           updated_at: string
         }
@@ -853,6 +923,7 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
+          kind?: string
           question: string
           updated_at?: string
         }
@@ -862,6 +933,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          kind?: string
           question?: string
           updated_at?: string
         }
@@ -878,6 +950,13 @@ export type Database = {
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "polls_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_summaries"
             referencedColumns: ["id"]
           },
         ]
@@ -1060,6 +1139,13 @@ export type Database = {
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activity_summaries"
             referencedColumns: ["id"]
           },
           {
@@ -1419,9 +1505,54 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      activity_summaries: {
+        Row: {
+          city: string | null
+          coordinator_username: string | null
+          cover_url: string | null
+          created_at: string | null
+          description: string | null
+          estimated_budget: number | null
+          experience_level: string | null
+          format: Database["public"]["Enums"]["event_format"] | null
+          id: string | null
+          interest_slug: string | null
+          max_participants: number | null
+          min_participants: number | null
+          participant_count: number | null
+          participation: string | null
+          social_level: string | null
+          status: Database["public"]["Enums"]["activity_status"] | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_interest_slug_fkey"
+            columns: ["interest_slug"]
+            isOneToOne: false
+            referencedRelation: "interests"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
     }
     Functions: {
+      activity_has_block: {
+        Args: { p_first: string; p_second: string }
+        Returns: boolean
+      }
+      activity_message_visible: {
+        Args: { p_activity_id: string; p_author: string }
+        Returns: boolean
+      }
+      activity_women_only_eligible: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
+      admin_cancel_activity: {
+        Args: { p_id: string; p_note: string }
+        Returns: Database["public"]["Enums"]["activity_status"]
+      }
       admin_dashboard_stats: {
         Args: never
         Returns: {
@@ -1440,6 +1571,17 @@ export type Database = {
           reviews: Json
           submitter_username: string
           tags: Json
+        }[]
+      }
+      admin_list_activities: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_status?: Database["public"]["Enums"]["activity_status"]
+        }
+        Returns: {
+          activity: Json
+          total_count: number
         }[]
       }
       admin_list_audit_logs: {
@@ -1553,6 +1695,52 @@ export type Database = {
         Returns: undefined
       }
       bootstrap_account: { Args: { account_id: string }; Returns: undefined }
+      can_read_activity_room: {
+        Args: { p_activity_id: string }
+        Returns: boolean
+      }
+      cancel_activity: {
+        Args: { p_activity_id: string; p_reason: string }
+        Returns: Database["public"]["Enums"]["activity_status"]
+      }
+      cast_vote: {
+        Args: { p_option_id: string; p_poll_id: string }
+        Returns: string
+      }
+      close_poll: { Args: { p_poll_id: string }; Returns: string }
+      complete_activity: {
+        Args: { p_activity_id: string }
+        Returns: Database["public"]["Enums"]["activity_status"]
+      }
+      confirm_activity: {
+        Args: {
+          p_activity_id: string
+          p_public_venue: boolean
+          p_starts_at: string
+          p_venue: string
+          p_venue_address: string
+        }
+        Returns: Database["public"]["Enums"]["activity_status"]
+      }
+      create_activity: {
+        Args: {
+          p_city: string
+          p_cover_url?: string
+          p_description: string
+          p_estimated_budget: number
+          p_experience_level: string
+          p_format?: Database["public"]["Enums"]["event_format"]
+          p_interest_slug: string
+          p_max_participants: number
+          p_min_participants: number
+          p_participation: string
+          p_proposed_dates: string[]
+          p_social_level: string
+          p_suggested_venue?: string
+          p_title: string
+        }
+        Returns: string
+      }
       create_notification: {
         Args: {
           p_body?: string
@@ -1560,6 +1748,16 @@ export type Database = {
           p_title: string
           p_type: string
           p_user_id: string
+        }
+        Returns: string
+      }
+      create_poll: {
+        Args: {
+          p_activity_id: string
+          p_closes_at?: string
+          p_kind: string
+          p_options: string[]
+          p_question: string
         }
         Returns: string
       }
@@ -1591,6 +1789,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      delete_activity_message: { Args: { p_id: string }; Returns: undefined }
       delete_application: { Args: { p_id: string }; Returns: boolean }
       delete_reminder: { Args: { p_id: string }; Returns: boolean }
       enqueue_notification: {
@@ -1604,7 +1803,33 @@ export type Database = {
         }
         Returns: string
       }
+      finish_activity_cancellation: {
+        Args: { p_id: string; p_reason: string }
+        Returns: Database["public"]["Enums"]["activity_status"]
+      }
       generate_deadline_notifications: { Args: never; Returns: number }
+      get_activity: {
+        Args: { p_id: string }
+        Returns: {
+          activity: Json
+          cancellation_reason: string
+          eligibility_message: string
+          proposed_dates: string[]
+          public_venue_confirmed: boolean
+          relationship: string
+          starts_at: string
+          venue: string
+          venue_address: string
+        }[]
+      }
+      get_activity_feedback: {
+        Args: { p_activity_id: string }
+        Returns: {
+          average_rating: number
+          comments: Json
+          response_count: number
+        }[]
+      }
       get_dashboard_summary: {
         Args: never
         Returns: {
@@ -1709,6 +1934,15 @@ export type Database = {
           username: string
         }[]
       }
+      get_poll_results: {
+        Args: { p_poll_id: string }
+        Returns: {
+          caller_voted: boolean
+          label: string
+          option_id: string
+          vote_count: number
+        }[]
+      }
       get_recommended_experiences: {
         Args: { p_limit?: number }
         Returns: {
@@ -1779,9 +2013,40 @@ export type Database = {
         Args: { role: Database["public"]["Enums"]["app_role"]; user_id: string }
         Returns: boolean
       }
+      is_activity_coordinator: {
+        Args: { p_activity_id: string }
+        Returns: boolean
+      }
       is_http_url: { Args: { p_url: string }; Returns: boolean }
       is_username_available: { Args: { p_username: string }; Returns: boolean }
+      leave_activity: {
+        Args: { p_activity_id: string }
+        Returns: Database["public"]["Enums"]["participant_status"]
+      }
       level_for_points: { Args: { p_total: number }; Returns: string }
+      list_activity_join_requests: {
+        Args: { p_activity_id: string }
+        Returns: {
+          request_message: string
+          requested_at: string
+          user_id: string
+          username: string
+        }[]
+      }
+      list_activity_participants: {
+        Args: { p_activity_id: string }
+        Returns: {
+          is_coordinator: boolean
+          username: string
+        }[]
+      }
+      list_my_activities: {
+        Args: { p_role?: string }
+        Returns: {
+          activity: Json
+          relationship: string
+        }[]
+      }
       list_my_applications: {
         Args: { p_status?: Database["public"]["Enums"]["application_status"] }
         Returns: {
@@ -1861,6 +2126,42 @@ export type Database = {
           title: string
         }[]
       }
+      lock_activity: {
+        Args: { p_access: string; p_id: string }
+        Returns: {
+          cancellation_reason: string | null
+          capacity: number | null
+          city: string | null
+          coordinator_id: string
+          cover_url: string | null
+          created_at: string
+          created_by: string
+          description: string
+          ends_at: string | null
+          estimated_budget: number
+          experience_level: string
+          format: Database["public"]["Enums"]["event_format"]
+          id: string
+          interest_slug: string
+          location: string | null
+          min_participants: number
+          participation: string
+          proposed_dates: string[]
+          public_venue_confirmed: boolean
+          social_level: string
+          starts_at: string | null
+          status: Database["public"]["Enums"]["activity_status"]
+          title: string
+          updated_at: string
+          venue_address: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "activities"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       mark_all_notifications_read: { Args: never; Returns: number }
       mark_notification_read: {
         Args: { p_id: string }
@@ -1876,6 +2177,15 @@ export type Database = {
           p_user_id: string
         }
         Returns: Database["public"]["Enums"]["notification_frequency"]
+      }
+      notify_activity_members: {
+        Args: {
+          p_body: string
+          p_id: string
+          p_include_pending?: boolean
+          p_title: string
+        }
+        Returns: undefined
       }
       opportunity_is_public: {
         Args: {
@@ -1900,6 +2210,10 @@ export type Database = {
       owns_approved_organisation: {
         Args: { p_organisation_id: string }
         Returns: boolean
+      }
+      post_activity_message: {
+        Args: { p_activity_id: string; p_body: string }
+        Returns: string
       }
       recommend_experience: {
         Args: {
@@ -1929,6 +2243,14 @@ export type Database = {
         Args: { p_id: string; p_interest_slugs: string[] }
         Returns: string[]
       }
+      request_to_join: {
+        Args: { p_activity_id: string; p_message?: string }
+        Returns: Database["public"]["Enums"]["participant_status"]
+      }
+      respond_to_join_request: {
+        Args: { p_activity_id: string; p_decision: string; p_user_id: string }
+        Returns: Database["public"]["Enums"]["participant_status"]
+      }
       resubmit_opportunity: {
         Args: { p_id: string }
         Returns: {
@@ -1955,6 +2277,24 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      search_activities: {
+        Args: {
+          p_category?: string
+          p_city?: string
+          p_experience_level?: string
+          p_keyword?: string
+          p_limit?: number
+          p_max_budget?: number
+          p_offset?: number
+          p_participation?: string
+          p_social_level?: string
+          p_status?: Database["public"]["Enums"]["activity_status"]
+        }
+        Returns: {
+          activity: Json
+          total_count: number
+        }[]
       }
       search_experiences: {
         Args: {
@@ -2060,6 +2400,16 @@ export type Database = {
           opportunity_id: string
         }[]
       }
+      submit_activity_feedback: {
+        Args: {
+          p_activity_id: string
+          p_comment?: string
+          p_rating: number
+          p_report_issue?: boolean
+          p_share_author?: boolean
+        }
+        Returns: undefined
+      }
       submit_opportunity: {
         Args: {
           p_category_slug: string
@@ -2084,6 +2434,10 @@ export type Database = {
           opportunity_id: string
           status: Database["public"]["Enums"]["review_status"]
         }[]
+      }
+      transfer_activity_coordinator: {
+        Args: { p_activity_id: string; p_username: string }
+        Returns: undefined
       }
       update_reminder: {
         Args: {
@@ -2151,7 +2505,7 @@ export type Database = {
     Enums: {
       activity_status:
         | "proposed"
-        | "recruiting"
+        | "gathering_interest"
         | "planning"
         | "confirmed"
         | "completed"
@@ -2326,7 +2680,7 @@ export const Constants = {
     Enums: {
       activity_status: [
         "proposed",
-        "recruiting",
+        "gathering_interest",
         "planning",
         "confirmed",
         "completed",
