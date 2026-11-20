@@ -115,4 +115,42 @@ values
   ('d3e00000-0000-4000-8000-000000000015', 'coding')
 on conflict (opportunity_id, interest_slug) do nothing;
 
+-- Pending prototypes for verification. Replaying refreshes pending deadlines and preserves decisions.
+insert into public.opportunities as listing (
+  id, submitted_by, title, category_slug, organisation_name, description,
+  source_url, eligibility, location, city, country, format, cost_or_funding, deadline
+)
+values
+  ('d3e00000-0000-4000-8000-000000000016', 'd3e00000-0000-4000-9000-000000000001',
+    '[Demo] Willow Lantern Reading Workshop', 'workshops', 'Fictional Willow Lantern Collective',
+    'Fictional verification fixture for a free reading workshop.',
+    'https://example.invalid/review/willow-lantern', 'Open to all', 'Lahore', 'Lahore', 'Pakistan', 'physical', 'Free', now() + interval '21 days'),
+  ('d3e00000-0000-4000-8000-000000000017', 'd3e00000-0000-4000-9000-000000000002',
+    '[Demo] Indigo Bookmark Fellowship', 'fellowships', 'Fictional Indigo Bookmark Studio',
+    'Temporary description for incomplete verification fixture.',
+    'https://example.invalid/review/indigo-bookmark', 'Open to all', 'Online', null, 'Pakistan', 'online', 'Fully funded', now() + interval '24 days'),
+  ('d3e00000-0000-4000-8000-000000000018', 'd3e00000-0000-4000-9000-000000000003',
+    '[Demo] Amber Teacup Prize', 'competitions', 'Fictional Amber Teacup Studio',
+    'Fictional flagging fixture. Act now and send money for a processing fee. No payments are accepted.',
+    'https://example.invalid/review/amber-teacup', 'Open to all', 'Karachi', 'Karachi', 'Pakistan', 'hybrid', 'Registration fee', now() + interval '28 days')
+on conflict (id) do update set deadline = excluded.deadline
+where listing.status = 'pending';
+
+-- Simulate a legacy incomplete row after the normal insert validation.
+update public.opportunities set description = ''
+where id = 'd3e00000-0000-4000-8000-000000000017'
+  and status = 'pending' and description = 'Temporary description for incomplete verification fixture.';
+
+insert into public.opportunity_tags (opportunity_id, interest_slug)
+select fixture.id::uuid, fixture.slug
+from (values
+  ('d3e00000-0000-4000-8000-000000000016', 'reading'),
+  ('d3e00000-0000-4000-8000-000000000017', 'research'),
+  ('d3e00000-0000-4000-8000-000000000018', 'design')
+) as fixture(id, slug)
+where not exists (
+  select 1 from public.opportunity_tags as tag where tag.opportunity_id = fixture.id::uuid
+)
+on conflict (opportunity_id, interest_slug) do nothing;
+
 commit;

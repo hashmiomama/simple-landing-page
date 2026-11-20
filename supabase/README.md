@@ -59,7 +59,7 @@ Any signed-in user can read `opportunity_categories`. Guests and signed-in users
 
 ### Optional local demo data
 
-After the normal local migration and seed replay, run this command with `psql` installed. The 15 fictional listings and three approved organisations use stable IDs, and replaying the file refreshes listing deadlines. The three fixture owners have fictional email addresses and no password or sign-in identity.
+After the normal local migration and seed replay, run this command with `psql` installed. The 15 fictional published listings, three pending submissions, and three approved organisations use stable IDs. Replaying the file refreshes the published and still-pending fixture deadlines without resetting decisions on the three queue fixtures. The fixture owners have fictional email addresses and no password or sign-in identity.
 
 ```powershell
 psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/demo_seed.sql
@@ -109,6 +109,34 @@ Search uses English full-text ranking. A non-empty category or interest array ma
 - Add a bookmark with `saved_opportunities(user_id, opportunity_id)` for an active public listing. Users can read and remove their own bookmarks, even after a listing expires. Use `list_saved_opportunities()` for saved listing titles and deadlines.
 - Insert an opportunity report with `reports(opportunity_id, reason, details)`. `details` is optional. The database assigns the reporter and open status. Reporters can read their own reports and admins can read all. Phase 8 will handle moderation.
 - Upload through the Storage API to `opportunity-covers/{user_id}/{unique_filename}`. The bucket accepts JPEG, PNG, WebP, and GIF up to 5 MiB. Use the public asset URL for `cover_url`. Owners can delete their own files through Storage and can replace a cover by uploading under a new name.
+
+## Phase 4 prototype verification
+
+Review the [Phase 4 migration](migrations/20261120000400_admin_verification.sql). It reuses `opportunities.status` and `last_verified_at` for listing verification and adds `needs_info`. Organisation verification is independent. `verification_reviews` now stores optional `decision` and `note` columns. Generated reports are snapshots in `report`, with a null decision.
+
+An administrator can review pending, approved, rejected, or needs-info listings. Approval checks required fields, tags, source URL syntax, and expiry, then stamps the verification date. Rejection and requests for information require a submitter-facing note. Both clear the current verification date. Every decision appends a verification review and an audit entry in the same transaction.
+
+Owners can read and edit their own needs-info listings and use the notes RPC to read their decision notes. Save listing content and tags before calling `resubmit_opportunity`, which validates the current listing and moves it back to pending. Notes are preserved. Internal reports and reviewer identities are available through the admin detail RPC. As in Phase 3, editing official listing content requires ownership of an approved organisation and the organisation role.
+
+### Phase 4 RPCs
+
+| RPC | Parameters | Returns |
+| --- | --- | --- |
+| `admin_list_submissions` | `p_status` text, default `pending`. Accepts `pending`, `approved`, `rejected`, `needs_info`, or null for all four. `p_limit` defaults to 20 and `p_offset` to 0. | Rows with `id`, `title`, `category_slug`, `status`, `submitted_by`, `submitter_username`, `organisation_name`, `deadline`, `created_at`, `last_verified_at`, `total_count`. Newest first. |
+| `admin_get_submission` | `p_id` UUID. | Zero or one row with `listing` (all listing fields except the search index), `tags` (array of objects with `slug` and `name`), `submitter_username`, and `reviews` (up to 10 newest entries with `id`, `reviewer_id`, `reviewer_kind`, `reviewer_username`, `status`, `decision`, `note`, `report`, `created_at`). |
+| `admin_review_opportunity` | `p_id` UUID, `p_decision` (`approve`, `reject`, or `request_info`), `p_note` text (required for rejection and requests for information). | One row with `opportunity_id`, `status`, `last_verified_at`, `review_id`. |
+| `admin_verification_report` | `p_id` UUID. | A stored JSON object with `method`, `generated_at`, `extracted_fields`, `missing_required_fields`, `checks`, `duplicate_indicators`, `scam_indicators`, `recommended_action`, and `reason`. |
+| `admin_list_organisations` | `p_status` text, default `pending`. Pass null for all statuses. | Organisation rows with `id`, `owner_id`, `name`, `description`, `website_url`, `status`, `created_at`, `updated_at`, `organisation_type`, `official_email`, `representative_name`, `representative_title`, `representative_email`, `evidence_notes`. |
+| `admin_dashboard_stats` | None. | One row with `registered_users`, `published_opportunities`, `pending_submissions`, `pending_organisations`, `open_reports`. |
+| `admin_list_audit_logs` | `p_limit` defaults to 20 and `p_offset` to 0. | Newest-first rows with `id`, `actor_id`, `actor_username`, `action`, `target_table`, `target_id`, `details`, `created_at`, `total_count`. |
+| `list_opportunity_review_notes` | `p_id` UUID. | For the listing's submitter, rows with `decision`, `note`, `created_at`. |
+| `resubmit_opportunity` | `p_id` UUID. | For the listing's submitter, one row with `opportunity_id` and `status` (`pending`). |
+| `get_opportunity_status` | `p_id` UUID. | Public scalar `available`, `expired`, or `unavailable`. A published listing expires when its deadline or end date passes. Missing and unpublished listings both return `unavailable`. |
+| `set_opportunity_tags` | `p_id` UUID and nonempty `p_interest_slugs` text array. | One row with `opportunity_id`, `interest_slugs`. Admins can replace tags on any listing. Submitters can replace their own tags while pending, rejected, or needing information. Existing tags survive invalid requests. |
+
+The `admin_*` RPCs check the caller's admin role. Paginated admin RPCs cap page size at 100. Empty pages carry no `total_count` row. Continue using `review_organisation(org_id, decision, note)` to decide organisation requests. Approval and rejection already append entries to `admin_audit_logs`.
+
+Rule-based reports inspect only stored data. Check values are `passed`, `failed`, or `needs manual verification`. Missing optional dates, unavailable organisation email data, source-page agreement, and organiser identity require manual verification. Duplicate detection compares case-insensitive trimmed titles or exact trimmed source URLs. Payment and urgency wording and free email domains are signals for human review. The report never fetches a source page or makes a decision automatically.
 
 ## Table reference
 
