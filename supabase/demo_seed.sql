@@ -239,4 +239,44 @@ insert into public.opportunity_tags (opportunity_id, interest_slug)
 values ('d5e00000-0000-4000-8000-000000000001', 'design')
 on conflict (opportunity_id, interest_slug) do nothing;
 
+-- Fictional local fixture. The account has no password or auth identity.
+insert into auth.users (id, aud, role, email, created_at, updated_at)
+values ('d7e00000-0000-4000-9000-000000000001', 'authenticated', 'authenticated',
+  'demo-activity-coordinator@example.invalid', now(), now())
+on conflict (id) do nothing;
+
+update public.profiles set username = 'demo_activity_host'
+where id = 'd7e00000-0000-4000-9000-000000000001' and username <> 'demo_activity_host';
+update public.profile_private set gender = 'female'
+where user_id = 'd7e00000-0000-4000-9000-000000000001' and gender is distinct from 'female';
+
+insert into public.interests (slug, name) values ('board-games', 'Board games')
+on conflict (slug) do nothing;
+
+insert into public.activities (
+  id, created_by, coordinator_id, interest_slug, title, description, city, format,
+  min_participants, capacity, estimated_budget, social_level, participation, experience_level, proposed_dates
+)
+select fixture.id::uuid, profile.id, profile.id, fixture.interest, fixture.title, fixture.description,
+  'Karachi', 'physical', 2, fixture.capacity, fixture.budget, fixture.social_level,
+  fixture.participation, 'beginner', array[now() + interval '7 days', now() + interval '14 days']
+from public.profiles as profile
+cross join (values
+  ('d7e00000-0000-4000-8000-000000000001','sketching','[Demo] Quiet sketching circle',
+    'Meet to sketch in a public garden at an unhurried pace.',6,0,'quiet','open'),
+  ('d7e00000-0000-4000-8000-000000000002','volunteering','[Demo] Beach clean-up planning group',
+    'Plan a small volunteer outing at a public beach.',10,200,'small_group','open'),
+  ('d7e00000-0000-4000-8000-000000000003','board-games','[Demo] Board game evening',
+    'Plan a beginner-friendly evening of board games at a public café.',8,600,'social','open'),
+  ('d7e00000-0000-4000-8000-000000000004','reading','[Demo] Women-only reading circle',
+    'Plan a quiet reading get-together in a public library.',6,0,'quiet','women_only')
+) as fixture(id,interest,title,description,capacity,budget,social_level,participation)
+where profile.id = 'd7e00000-0000-4000-9000-000000000001'
+on conflict (id) do nothing;
+
+insert into public.activity_participants (activity_id,user_id,status)
+select id, created_by, 'accepted' from public.activities
+where created_by = 'd7e00000-0000-4000-9000-000000000001'
+on conflict (activity_id,user_id) do nothing;
+
 commit;

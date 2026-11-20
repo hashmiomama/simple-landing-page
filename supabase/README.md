@@ -226,6 +226,57 @@ Members can read their own ledger rows. Ledger writes are internal. Levels start
 
 To apply pending migrations to an existing local stack while preserving its data, run `supabase start` followed by `supabase migration up`.
 
+
+## Phase 7 shared activities
+
+The [Phase 7 migration](migrations/20261120000900_shared_activities.sql) adds shared activities, planning, and feedback. The coordinator counts toward the group size and can hand off the role to another accepted participant. The first request moves a proposal to `gathering_interest`; the first acceptance moves it to `planning`. Confirmation requires a future start, enough accepted participants, and a public venue with an address for physical or hybrid meetups. The coordinator can revise arrangements before the confirmed start time. Completed activities accept feedback.
+
+Discovery requires sign-in. Accepted participants get planning details and the pseudonymous roster. The coordinator gets a separate queue with the IDs needed to respond to pending requests. The women-only eligibility message uses only the caller's private gender. Joining and accepting also check blocks in both directions against the creator and coordinator.
+
+Activity notifications use the existing Activity updates and Group messages preferences. All link to `/community/:id`. A user receives at most one unread discussion notification per activity. Activity feedback reports use the existing open reports count and review access.
+
+### Apply locally and load the demo
+
+Run from the repository root with the local Supabase stack and `psql` available.
+
+```sh
+supabase start
+supabase migration up
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/seed.sql
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/demo_seed.sql
+```
+
+The four Karachi proposals belong to `demo_activity_host`, a local fixture account with no credentials. Sign in using your own local account to browse or request to join. To test coordinator workflows, create an activity with one local account and request to join with another.
+
+The migration adds `activity_messages`, `polls`, `poll_options`, `poll_votes` and `activity_participants` to `supabase_realtime` when the publication exists. For a database where the publication was absent at migration time, enable Postgres Changes for those tables in Supabase's publication settings after the publication is available. Subscribe to `INSERT` and `UPDATE` and refetch the authorized data. Filter by `activity_id` where present, and by `poll_id` for options. The membership change feed has an opaque row ID, activity ID, status and timestamp. Use the roster and request RPCs for display. Message deletion redacts the body and sets `deleted_at` in an RLS-checked update. Supabase Postgres Changes cannot apply row filters to physical deletes. [Supabase Realtime documentation](https://supabase.com/docs/guides/realtime/postgres-changes)
+
+### Activity RPCs
+
+Arguments below use the displayed names. Parenthesized defaults can be omitted.
+
+| RPC | Return columns or value |
+| --- | --- |
+| `create_activity(p_title text, p_interest_slug text, p_description text, p_city text, p_min_participants int, p_max_participants int, p_estimated_budget numeric, p_social_level text, p_participation text, p_experience_level text, p_proposed_dates timestamptz[], p_suggested_venue text = null, p_cover_url text = null, p_format event_format = 'physical')` | New activity UUID |
+| `search_activities(p_keyword text = null, p_category text = null, p_city text = null, p_social_level text = null, p_participation text = null, p_experience_level text = null, p_max_budget numeric = null, p_status activity_status = null, p_limit int = 20, p_offset int = 0)` | `activity` summary JSON, `total_count` bigint |
+| `get_activity(p_id uuid)` | `activity` summary JSON, `relationship`, `eligibility_message`, `proposed_dates`, `starts_at`, `venue`, `venue_address`, `public_venue_confirmed`, `cancellation_reason` |
+| `list_my_activities(p_role text = null)` | `activity` summary JSON, `relationship`. Filters are `created`, `coordinator`, `accepted`, `pending`, and `declined`. |
+| `request_to_join(p_activity_id uuid, p_message text = null)`, `respond_to_join_request(p_activity_id uuid, p_user_id uuid, p_decision text)`, `leave_activity(p_activity_id uuid)` | Membership status. Decisions are `accept` and `decline`. |
+| `list_activity_participants(p_activity_id uuid)` | `username`, `is_coordinator` |
+| `list_activity_join_requests(p_activity_id uuid)` | `user_id`, `username`, `request_message`, `requested_at`. Coordinator only. |
+| `transfer_activity_coordinator(p_activity_id uuid, p_username text)` | Void |
+| `confirm_activity(p_activity_id uuid, p_starts_at timestamptz, p_venue text, p_venue_address text, p_public_venue boolean)`, `cancel_activity(p_activity_id uuid, p_reason text)`, `complete_activity(p_activity_id uuid)` | Activity status |
+| `post_activity_message(p_activity_id uuid, p_body text)`, `delete_activity_message(p_id uuid)` | Message UUID on post, void on delete |
+| `create_poll(p_activity_id uuid, p_question text, p_kind text, p_options text[], p_closes_at timestamptz = null)` | New poll UUID |
+| `cast_vote(p_poll_id uuid, p_option_id uuid)`, `close_poll(p_poll_id uuid)` | Selected option UUID or poll closing timestamp, respectively |
+| `get_poll_results(p_poll_id uuid)` | `option_id`, `label`, `vote_count`, `caller_voted` |
+| `submit_activity_feedback(p_activity_id uuid, p_rating int, p_comment text = null, p_report_issue boolean = false, p_share_author boolean = false)` | Void |
+| `get_activity_feedback(p_activity_id uuid)` | `response_count`, `average_rating`, `comments` JSON. Comments are available only to the coordinator. Each item has `comment` and nullable `username`. |
+| `admin_list_activities(p_status activity_status = null, p_limit int = 20, p_offset int = 0)` | `activity` summary JSON, `total_count` bigint |
+| `admin_cancel_activity(p_id uuid, p_note text)` | Activity status |
+| `get_my_calendar(p_from timestamptz, p_to timestamptz)` | `event_type`, `id`, `title`, `event_at`, `link_path`, `done`. Confirmed activities appear as `activity` events. |
+
+Summary JSON keys are `id`, `title`, `interest_slug`, `description`, `city`, `min_participants`, `max_participants`, `estimated_budget`, `social_level`, `participation`, `experience_level`, `format`, `status`, `cover_url`, `created_at`, `coordinator_username`, and `participant_count`. The caller's relationship is `none`, `pending`, `accepted`, `coordinator`, or `declined`.
+
 ## Table reference
 
 | Table | Purpose |
