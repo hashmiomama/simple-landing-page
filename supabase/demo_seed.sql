@@ -221,4 +221,22 @@ where not exists (
 )
 on conflict (experience_id, interest_slug) do nothing;
 
+-- A user-neutral fixture near the alert threshold. A tester can save or track it.
+insert into public.opportunities (
+  id, title, category_slug, organisation_name, description, source_url,
+  eligibility, location, format, cost_or_funding, deadline, status, last_verified_at
+)
+values (
+  'd5e00000-0000-4000-8000-000000000001',
+  '[Demo] Paper Lantern Portfolio Clinic', 'workshops', 'Fictional Paper Lantern Studio',
+  'Fictional deadline fixture for the application tracker and calendar.',
+  'https://example.invalid/demo/portfolio-clinic', 'Open to all', 'Online', 'online', 'Free',
+  now() + interval '48 hours', 'approved', now()
+)
+on conflict (id) do update set deadline = excluded.deadline;
+
+insert into public.opportunity_tags (opportunity_id, interest_slug)
+values ('d5e00000-0000-4000-8000-000000000001', 'design')
+on conflict (opportunity_id, interest_slug) do nothing;
+
 commit;

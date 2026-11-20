@@ -59,7 +59,7 @@ Any signed-in user can read `opportunity_categories`. Guests and signed-in users
 
 ### Optional local demo data
 
-After the normal local migration and seed replay, run this command with `psql` installed. The seed uses stable IDs for the 15 published opportunity fixtures, three opportunity queue fixtures, three approved organisations, ten approved solo experiences, and two experience queue fixtures. Replaying it preserves moderation decisions on the queue fixtures. The fixture owners have fictional email addresses and no password or sign-in identity.
+After the normal local migration and seed replay, run this command with `psql` installed. The seed uses stable IDs for the 16 published opportunity fixtures, three opportunity queue fixtures, three approved organisations, ten approved solo experiences, and two experience queue fixtures. Replaying it preserves moderation decisions on the queue fixtures. The fixture owners have fictional email addresses and no password or sign-in identity.
 
 ```powershell
 psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/demo_seed.sql
@@ -164,6 +164,50 @@ Experience fields are `id`, `submitted_by`, `title`, `description`, `category`, 
 Search matches a case-insensitive literal keyword in the title, description, location, or city. City matches case-insensitively. A nonempty interest list matches any selected slug, and `p_max_cost` is inclusive in PKR. Search and admin list are newest first with stable ID tie-breaking. Page size defaults to 20 and is clamped to 1–100. Offset defaults to zero. Empty pages have no `total_count` row.
 
 Recommendations use 30 points each for social fit and interest overlap, 15 each for budget and city, and 10 for category. Missing social comfort or a missing legacy interaction level is neutral at 15 points. The owner-writable `user_preferences.experience_category_slugs` enum array records category preferences and defaults to empty. Budget reuses the Phase 2 preference, including the PKR 2,500 fallback for the low tier. An approved experience does not expire automatically because the model has no expiry field.
+
+## Phase 5 tracker, calendar, and notifications
+
+The [Phase 5 migration](migrations/20261120000700_application_tracker_notifications.sql) runs after the already-issued Phase 6 migration. It reuses the existing tables and owner relationships. Application statuses are `preparing`, `applied`, `shortlisted`, `interview`, `accepted`, `rejected`, and `withdrawn`. Existing `interested` rows become `preparing` and `submitted` becomes `applied`. Each user has one tracker per opportunity. Approved expired opportunities can be tracked. If moderation later hides an opportunity, the user's tracker and notes stay editable and listing metadata comes back as null.
+
+Reminders can link to one approved opportunity or one of the caller's applications. `done` defaults to false. Calendar dates use an inclusive start and exclusive end (`p_from <= event_at < p_to`). A saved and tracked deadline appears as two calendar event types. The notification job sends one alert for the shared deadline. Interviews appear only while the application is in `interview`. The calendar includes done reminders and labels them with `done`.
+
+### Phase 5 RPCs
+
+All of these RPCs require an authenticated session and scope their results to the caller.
+
+| RPC | Parameters | Returns |
+| --- | --- | --- |
+| `upsert_application` | `p_opportunity_id`, `p_status`, optional `p_notes`, `p_applied_at`, `p_interview_at` | One tracker row. Omitted optional values clear those fields. |
+| `list_my_applications` | Optional `p_status`, null for all | Tracker rows plus `opportunity_title`, `organisation_name`, `deadline`, `is_expired`. Those four fields can be null when the listing has been taken down. |
+| `delete_application` | `p_id` | Boolean indicating whether a row was deleted. |
+| `create_reminder` | `p_title`, `p_remind_at`, optional `p_note`, `p_opportunity_id`, `p_application_id` | Reminder row. |
+| `update_reminder` | `p_id`, `p_title`, `p_remind_at`, optional `p_note`, `p_opportunity_id`, `p_application_id`, `p_done` | Updated reminder row, or zero rows. Omitted note and links clear them. Omitted `p_done` preserves the current flag. |
+| `delete_reminder` | `p_id` | Boolean indicating whether a row was deleted. |
+| `list_my_reminders` | None | Reminder rows ordered by `remind_at`. |
+| `get_my_calendar` | `p_from`, `p_to` | `event_type`, `id`, `title`, `event_at`, `link_path`, `done`. Types are `saved_deadline`, `application_deadline`, `reminder`, `interview`. |
+| `list_my_notifications` | Optional `p_limit` (20, max 100), `p_offset` (0), `p_unread_only` (false) | One row with `notifications` (JSON array), `total_count` and `unread_count` for the whole inbox, even on an empty page. |
+| `mark_notification_read` | `p_id` | Zero or one row with `id`, `read_at`. Repeated calls preserve the original read time. |
+| `mark_all_notifications_read` | None | Number of previously unread notifications marked read. |
+| `get_my_notification_preferences` | None | Twelve rows with `category`, `channel`, `frequency`. |
+| `set_my_notification_preferences` | `p_category`, `p_channel`, `p_frequency` | One updated `category`, `channel`, `frequency` row. |
+
+Tracker row columns are `id`, `user_id`, `opportunity_id`, `status`, `notes`, `applied_at`, `interview_at`, `created_at`, `updated_at`. Reminder row columns are `id`, `user_id`, `application_id`, `title`, `remind_at`, `sent_at`, `created_at`, `updated_at`, `note`, `opportunity_id`, `done`. Notification array entries contain `id`, `type`, `title`, `body`, `link_path`, `read_at`, `created_at`. The notification table reuses `kind` for the type.
+
+Categories are `new_opportunities`, `deadline_reminders`, `verification_updates`, `activity_updates`, `group_messages`, and `account`. Channels are `in_app` and `email`. Frequencies are `instant`, `daily`, and `off`. New accounts default to in-app instant and email daily across all categories. Existing opt-outs, including the former email-off setting, are preserved. Email and daily digest delivery are outside this migration. In-app creation skips categories set to off and writes immediately for either enabled frequency.
+
+Trusted code can call `create_notification(p_user_id, p_type, p_title, p_body, p_link)`, returning a notification UUID or null for a skipped notification. Supported types are `opportunity_alert`, `deadline_approaching`, `custom_reminder`, `verification_update`, `activity_update`, `group_message`, and `account`. Review status changes for opportunities, organisations, and solo experiences produce `verification_update` notifications.
+
+### Hourly deadline job
+
+The migration attempts to enable `pg_cron` and register the job. If the server lacks the extension or reports a scheduling warning, enable **pg_cron** under **Integrations → Cron** in the intended Supabase project. Then run the following as `postgres` in that project's SQL editor. This sets or replaces the named hourly job.
+
+```sql
+select cron.schedule('application-deadline-notifications', '0 * * * *', 'select public.generate_deadline_notifications();');
+```
+
+For SQL-only extension setup, run `create extension if not exists pg_cron with schema pg_catalog;` and `grant usage on schema cron to postgres;` as the extension owner first if needed. Check the **Cron** integration for the job and its run history.
+
+To run without Cron, a trusted caller can execute `select public.generate_deadline_notifications();`. It returns the number of notifications created. It covers future public deadlines within 72 hours and due, unfinished custom reminders. The unique keys include the deadline or reminder time so repeats are deduplicated and a rescheduled time can produce a new alert. To try this locally, save or track the **[Demo] Paper Lantern Portfolio Clinic** fixture with your own test account. The fixture itself adds no user-scoped data.
 
 ## Table reference
 
