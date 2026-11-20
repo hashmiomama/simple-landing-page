@@ -126,22 +126,15 @@ function CalendarContent({ userId }: { userId: string }) {
           {!query.data.length && (
             <p className="mt-2 text-sm text-muted-foreground">No events this month.</p>
           )}
+          {query.data.length > 0 && (
+            <div className="mt-3 sm:hidden">
+              <h3 className="mb-2 font-semibold">Events this month</h3>
+              <Agenda events={query.data} today={today} />
+            </div>
+          )}
         </>
       ) : query.data.length ? (
-        <ul className="space-y-2">
-          {query.data.map((event) => (
-            <li
-              key={`${event.event_type}-${event.id}`}
-              className={`rounded-xl border bg-card p-3 ${eventDay(event.event_at) === today ? "ring-1 ring-primary" : ""}`}
-            >
-              <p className="mb-1 text-xs font-semibold text-muted-foreground">
-                <time dateTime={event.event_at}>{showDateTime(event.event_at)}</time>
-                {eventDay(event.event_at) === today && " · Today"}
-              </p>
-              <EventLink event={event} />
-            </li>
-          ))}
-        </ul>
+        <Agenda events={query.data} today={today} />
       ) : (
         <p className="rounded-xl border bg-card p-4 text-muted-foreground">No events this month.</p>
       )}
@@ -167,6 +160,28 @@ function CalendarContent({ userId }: { userId: string }) {
   );
 }
 
+function Agenda({ events, today }: { events: CalendarEvent[]; today: string }) {
+  return (
+    <ul className="space-y-2">
+      {events.map((event) => {
+        const isToday = eventDay(event.event_at) === today;
+        return (
+          <li
+            key={`${event.event_type}-${event.id}`}
+            className={`rounded-xl border bg-card p-3 ${isToday ? "ring-1 ring-primary" : ""}`}
+          >
+            <p className="mb-1 text-xs font-semibold text-muted-foreground">
+              <time dateTime={event.event_at}>{showDateTime(event.event_at)}</time>
+              {isToday && " · Today"}
+            </p>
+            <EventLink event={event} />
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 function MonthGrid({
   month,
   days,
@@ -186,17 +201,19 @@ function MonthGrid({
       ),
   );
   return (
-    <div
-      className="overflow-x-auto rounded-xl border"
-      tabIndex={0}
-      role="region"
-      aria-label="Monthly calendar grid"
-    >
-      <table className="w-full min-w-160 table-fixed border-collapse bg-card text-sm">
+    <div className="rounded-xl border">
+      <table
+        aria-label="Monthly calendar grid"
+        className="w-full table-fixed border-collapse bg-card text-sm"
+      >
         <thead>
           <tr>
             {weekdays.map((day) => (
-              <th key={day} scope="col" className="border-b p-2 text-muted-foreground">
+              <th
+                key={day}
+                scope="col"
+                className="border-b py-2 text-xs text-muted-foreground sm:text-sm"
+              >
                 {day}
               </th>
             ))}
@@ -208,10 +225,11 @@ function MonthGrid({
               {cells.slice(row * 7, row * 7 + 7).map((date) => {
                 const key = dayKey(date);
                 const isToday = key === today;
+                const dailyEvents = events.filter((event) => eventDay(event.event_at) === key);
                 return (
                   <td
                     key={key}
-                    className={`h-24 border p-2 align-top ${isToday ? "bg-lavender-soft" : ""}`}
+                    className={`h-12 border px-0.5 py-1 text-center align-top sm:h-24 sm:p-2 sm:text-left ${isToday ? "bg-lavender-soft" : ""}`}
                   >
                     {date.getUTCMonth() === month.getUTCMonth() && (
                       <>
@@ -222,16 +240,20 @@ function MonthGrid({
                           className={isToday ? "font-bold text-primary-strong" : "font-medium"}
                         >
                           {date.getUTCDate()}
-                          {isToday && <span className="ml-1 text-xs">Today</span>}
+                          {isToday && <span className="ml-1 hidden text-xs sm:inline">Today</span>}
                         </time>
-                        <ul className="mt-1 space-y-1">
-                          {events
-                            .filter((event) => eventDay(event.event_at) === key)
-                            .map((event) => (
-                              <li key={`${event.event_type}-${event.id}`}>
-                                <EventLink event={event} />
-                              </li>
-                            ))}
+                        {dailyEvents.length > 0 && (
+                          <p className="text-xs text-primary-strong sm:hidden">
+                            {dailyEvents.length}
+                            <span className="sr-only"> events</span>
+                          </p>
+                        )}
+                        <ul className="mt-1 hidden space-y-1 sm:block">
+                          {dailyEvents.map((event) => (
+                            <li key={`${event.event_type}-${event.id}`}>
+                              <EventLink event={event} />
+                            </li>
+                          ))}
                         </ul>
                       </>
                     )}
@@ -254,7 +276,7 @@ function EventLink({ event }: { event: CalendarEvent }) {
   return (
     <InternalLink
       href={event.link_path}
-      className={`block break-words rounded-lg px-2 py-1 text-xs hover:underline ${type.tone}`}
+      className={`block [overflow-wrap:anywhere] rounded-lg px-2 py-1 text-xs hover:underline ${type.tone}`}
     >
       <span className="block font-semibold">
         {type.label}

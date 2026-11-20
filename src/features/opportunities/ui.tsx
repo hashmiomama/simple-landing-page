@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const fieldClass = "grid gap-1.5 text-sm font-medium";
-export const selectClass = "min-h-11 w-full rounded-xl border border-input bg-card px-3 text-sm";
+export const fieldClass = "grid min-w-0 grid-cols-1 gap-1.5 text-sm font-medium";
+export const selectClass =
+  "min-h-11 w-full min-w-0 rounded-xl border border-input bg-card px-3 text-sm";
 
 export function Page({
   title,

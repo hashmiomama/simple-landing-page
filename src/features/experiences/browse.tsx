@@ -120,9 +120,10 @@ export function ExperienceBrowse({
             ? `${count} ${count === 1 ? "experience" : "experiences"}`
             : "Experience results"}
         </p>
-        <div role="group" aria-label="Results view" className="flex gap-2 md:hidden">
+        <div role="group" aria-label="Results view" className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto md:hidden">
           <Button
             size="sm"
+            className="h-11 sm:h-8"
             variant={showingMap ? "outline" : "soft"}
             aria-pressed={!showingMap}
             onClick={() => update({ ...search, view: undefined })}
@@ -131,6 +132,7 @@ export function ExperienceBrowse({
           </Button>
           <Button
             size="sm"
+            className="h-11 sm:h-8"
             variant={showingMap ? "soft" : "outline"}
             aria-pressed={showingMap}
             onClick={() => update({ ...search, view: "map" })}
@@ -289,7 +291,7 @@ function ExperienceFilters({
         });
       }}
     >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Search experiences">
           <Input
             name="keyword"
@@ -342,13 +344,14 @@ function ExperienceFilters({
           )}
         </div>
       </details>
-      <div className="flex gap-2">
-        <Button type="submit" className="bg-primary-strong">
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" className="h-11 bg-primary-strong sm:h-9">
           Search
         </Button>
         <Button
           type="reset"
           variant="outline"
+          className="h-11 sm:h-9"
           onClick={() => {
             setTags([]);
             setFree(false);

@@ -7,7 +7,7 @@ import {
   Search as SearchIcon,
   SlidersHorizontal,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { EmptyState, ErrorState } from "@/components/layout/page-states";
 import { Button } from "@/components/ui/button";
@@ -59,31 +59,33 @@ export function Browse({ search, update }: { search: Search; update: (search: Se
   };
   return (
     <Page title="Opportunities" intro="Find internships, scholarships, events and more.">
-      <div className="mb-6 flex flex-wrap items-end gap-3 rounded-3xl border bg-lavender-soft p-4 sm:p-5">
-        <KeywordForm
-          key={search.keyword ?? ""}
-          keyword={search.keyword ?? ""}
-          onSearch={(keyword) => setFilters({ keyword: keyword || undefined })}
-        />
-        <Field label="Sort by">
-          <select
-            value={search.sort ?? "relevance"}
-            className={selectClass}
-            onChange={(e) => setFilters({ sort: e.target.value as Search["sort"] })}
-          >
-            {Object.entries(sorts).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </Field>
+      <div className="mb-6 grid min-w-0 gap-3 rounded-3xl border bg-lavender-soft p-4 sm:flex sm:items-end sm:p-5">
         <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" className="lg:hidden">
-              <SlidersHorizontal aria-hidden /> Filters
-            </Button>
-          </SheetTrigger>
+          <KeywordForm
+            key={search.keyword ?? ""}
+            keyword={search.keyword ?? ""}
+            onSearch={(keyword) => setFilters({ keyword: keyword || undefined })}
+            filters={
+              <SheetTrigger asChild>
+                <Button type="button" variant="outline" className="h-11 lg:hidden">
+                  <SlidersHorizontal aria-hidden /> Filters
+                </Button>
+              </SheetTrigger>
+            }
+          />
+          <Field label="Sort by">
+            <select
+              value={search.sort ?? "relevance"}
+              className={selectClass}
+              onChange={(e) => setFilters({ sort: e.target.value as Search["sort"] })}
+            >
+              {Object.entries(sorts).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </Field>
           <SheetContent
             side="right"
             className="flex w-[min(100%,25rem)] flex-col overflow-y-auto bg-background p-5"
@@ -188,34 +190,39 @@ export function Browse({ search, update }: { search: Search; update: (search: Se
 export function KeywordForm({
   keyword = "",
   onSearch,
+  filters,
 }: {
   keyword?: string;
   onSearch: (value: string) => void;
+  filters?: ReactNode;
 }) {
   const [value, setValue] = useState(keyword);
   return (
     <form
       role="search"
-      className="flex min-w-0 flex-1 flex-wrap items-end gap-2"
+      className="grid min-w-0 gap-3 sm:flex sm:flex-1 sm:flex-wrap sm:items-end sm:gap-2"
       onSubmit={(event) => {
         event.preventDefault();
         onSearch(value.trim());
       }}
     >
-      <div className="min-w-40 flex-1">
+      <div className="min-w-0 sm:min-w-40 sm:flex-1">
         <Field label="Search opportunities">
           <Input
             type="search"
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            placeholder="Try scholarships or hackathons"
+            placeholder="Try scholarships"
             className="h-11 bg-card"
           />
         </Field>
       </div>
-      <Button className="bg-primary-strong" type="submit">
-        <SearchIcon aria-hidden /> Search
-      </Button>
+      <div className="grid grid-cols-2 gap-2 sm:flex">
+        <Button className="h-11 bg-primary-strong sm:h-9" type="submit">
+          <SearchIcon aria-hidden /> Search
+        </Button>
+        {filters}
+      </div>
     </form>
   );
 }
@@ -353,7 +360,7 @@ function CityFilter({ city, save }: { city: string; save: (city: string) => void
 
 function ListingCard({ item, category }: { item: Listing; category: string }) {
   return (
-    <article className="flex h-full min-w-0 flex-col rounded-3xl border bg-card p-5 shadow-soft">
+    <article className="flex h-full min-w-0 flex-col rounded-3xl border bg-card p-5 shadow-soft [overflow-wrap:anywhere]">
       <div className="flex flex-wrap gap-2 text-xs font-semibold">
         <span className="rounded-full bg-lavender-soft px-3 py-1 text-primary-strong">
           {category}

@@ -16,7 +16,7 @@ export function MobileNavigation() {
   if (status !== "signed_in") return null;
 
   return (
-    <div className="h-[calc(3.5rem+env(safe-area-inset-bottom))] shrink-0 sm:hidden">
+    <div className="h-[calc(4.5rem+env(safe-area-inset-bottom))] shrink-0 sm:hidden">
       <nav
         aria-label="Mobile navigation"
         className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-background pb-[env(safe-area-inset-bottom)]"

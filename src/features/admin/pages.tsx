@@ -103,7 +103,7 @@ export function OpportunityQueue() {
                   >
                     {item.title || "Untitled submission"}
                   </Link>
-                  <p className="mt-1 text-sm">
+                  <p className="mt-1 [overflow-wrap:anywhere] text-sm">
                     {categories.data?.find((c) => c.slug === item.category_slug)?.name ??
                       item.category_slug}{" "}
                     · {item.organisation_name}
@@ -177,7 +177,7 @@ function OrganisationCard({
   return (
     <article className="space-y-3 rounded-2xl border bg-card p-5 shadow-soft">
       <h2 className="break-words text-xl font-bold">{org.name}</h2>
-      <p className="text-sm">
+      <p className="[overflow-wrap:anywhere] text-sm">
         {org.organisation_type ?? "Type not provided"} ·{" "}
         {org.official_email ?? "Email not provided"}
       </p>

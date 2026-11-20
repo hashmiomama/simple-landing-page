@@ -120,7 +120,7 @@ function ApplicationCard({ item, userId }: { item: Application; userId: string }
     <article className="space-y-4 rounded-3xl border bg-card p-5 shadow-soft">
       <div>
         <h2 className="break-words text-xl font-bold">{title}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 [overflow-wrap:anywhere] text-sm text-muted-foreground">
           {item.organisation_name ?? "Listing unavailable"}
         </p>
         <p className="mt-2 flex flex-wrap items-center gap-2 text-sm">
