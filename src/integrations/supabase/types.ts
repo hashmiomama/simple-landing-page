@@ -1048,17 +1048,57 @@ export type Database = {
           },
         ]
       }
+      solo_experience_tags: {
+        Row: {
+          created_at: string
+          experience_id: string
+          interest_slug: string
+        }
+        Insert: {
+          created_at?: string
+          experience_id: string
+          interest_slug: string
+        }
+        Update: {
+          created_at?: string
+          experience_id?: string
+          interest_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solo_experience_tags_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "solo_experiences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solo_experience_tags_interest_slug_fkey"
+            columns: ["interest_slug"]
+            isOneToOne: false
+            referencedRelation: "interests"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       solo_experiences: {
         Row: {
+          accessibility_information: string | null
           category: string
           city: string
           cost: number | null
+          cover_url: string | null
           created_at: string
           currency: string | null
           description: string
           duration_minutes: number | null
           id: string
+          latitude: number | null
           location: string
+          longitude: number | null
+          opening_hours: string | null
+          safety_considerations: string | null
+          social_level: Database["public"]["Enums"]["social_comfort"] | null
           source_url: string | null
           status: Database["public"]["Enums"]["review_status"]
           submitted_by: string | null
@@ -1066,15 +1106,22 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          accessibility_information?: string | null
           category: string
           city: string
           cost?: number | null
+          cover_url?: string | null
           created_at?: string
           currency?: string | null
           description: string
           duration_minutes?: number | null
           id?: string
+          latitude?: number | null
           location: string
+          longitude?: number | null
+          opening_hours?: string | null
+          safety_considerations?: string | null
+          social_level?: Database["public"]["Enums"]["social_comfort"] | null
           source_url?: string | null
           status?: Database["public"]["Enums"]["review_status"]
           submitted_by?: string | null
@@ -1082,15 +1129,22 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          accessibility_information?: string | null
           category?: string
           city?: string
           cost?: number | null
+          cover_url?: string | null
           created_at?: string
           currency?: string | null
           description?: string
           duration_minutes?: number | null
           id?: string
+          latitude?: number | null
           location?: string
+          longitude?: number | null
+          opening_hours?: string | null
+          safety_considerations?: string | null
+          social_level?: Database["public"]["Enums"]["social_comfort"] | null
           source_url?: string | null
           status?: Database["public"]["Enums"]["review_status"]
           submitted_by?: string | null
@@ -1147,6 +1201,7 @@ export type Database = {
           country: string | null
           created_at: string
           currency: string | null
+          experience_category_slugs: Database["public"]["Enums"]["experience_category"][]
           max_budget: number | null
           onboarding_completed: boolean
           opportunity_category_slugs: string[]
@@ -1162,6 +1217,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           currency?: string | null
+          experience_category_slugs?: Database["public"]["Enums"]["experience_category"][]
           max_budget?: number | null
           onboarding_completed?: boolean
           opportunity_category_slugs?: string[]
@@ -1177,6 +1233,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           currency?: string | null
+          experience_category_slugs?: Database["public"]["Enums"]["experience_category"][]
           max_budget?: number | null
           onboarding_completed?: boolean
           opportunity_category_slugs?: string[]
@@ -1285,6 +1342,7 @@ export type Database = {
         Args: never
         Returns: {
           open_reports: number
+          pending_experiences: number
           pending_organisations: number
           pending_submissions: number
           published_opportunities: number
@@ -1312,6 +1370,35 @@ export type Database = {
           target_id: string
           target_table: string
           total_count: number
+        }[]
+      }
+      admin_list_experiences: {
+        Args: { p_limit?: number; p_offset?: number; p_status?: string }
+        Returns: {
+          accessibility_information: string
+          category: string
+          city: string
+          cost: number
+          cover_url: string
+          created_at: string
+          currency: string
+          description: string
+          duration_minutes: number
+          id: string
+          latitude: number
+          location: string
+          longitude: number
+          opening_hours: string
+          safety_considerations: string
+          social_level: Database["public"]["Enums"]["social_comfort"]
+          source_url: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          submitter_username: string
+          tags: Json
+          title: string
+          total_count: number
+          updated_at: string
         }[]
       }
       admin_list_organisations: {
@@ -1355,6 +1442,13 @@ export type Database = {
           total_count: number
         }[]
       }
+      admin_review_experience: {
+        Args: { p_decision: string; p_id: string; p_note?: string }
+        Returns: {
+          experience_id: string
+          status: Database["public"]["Enums"]["review_status"]
+        }[]
+      }
       admin_review_opportunity: {
         Args: { p_decision: string; p_id: string; p_note?: string }
         Returns: {
@@ -1372,6 +1466,33 @@ export type Database = {
           saved_count: number
           saved_due_in_14_days_count: number
           upcoming_deadlines: Json
+        }[]
+      }
+      get_experience: {
+        Args: { p_id: string }
+        Returns: {
+          accessibility_information: string
+          category: string
+          city: string
+          cost: number
+          cover_url: string
+          created_at: string
+          currency: string
+          description: string
+          duration_minutes: number
+          id: string
+          latitude: number
+          location: string
+          longitude: number
+          opening_hours: string
+          safety_considerations: string
+          social_level: Database["public"]["Enums"]["social_comfort"]
+          source_url: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          tags: Json
+          title: string
+          updated_at: string
         }[]
       }
       get_opportunity: {
@@ -1404,6 +1525,38 @@ export type Database = {
         }[]
       }
       get_opportunity_status: { Args: { p_id: string }; Returns: string }
+      get_recommended_experiences: {
+        Args: { p_limit?: number }
+        Returns: {
+          accessibility_information: string
+          budget_score: number
+          category: string
+          category_score: number
+          city: string
+          cost: number
+          cover_url: string
+          created_at: string
+          currency: string
+          description: string
+          duration_minutes: number
+          id: string
+          interest_score: number
+          latitude: number
+          location: string
+          location_score: number
+          longitude: number
+          opening_hours: string
+          safety_considerations: string
+          social_comfort_score: number
+          social_level: Database["public"]["Enums"]["social_comfort"]
+          source_url: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          title: string
+          total_score: number
+          updated_at: string
+        }[]
+      }
       get_recommended_opportunities: {
         Args: { p_limit?: number }
         Returns: {
@@ -1486,6 +1639,34 @@ export type Database = {
         Args: { p_organisation_id: string }
         Returns: boolean
       }
+      recommend_experience: {
+        Args: {
+          p_accessibility_information: string
+          p_category: string
+          p_city: string
+          p_cost: number
+          p_cover_url?: string
+          p_description: string
+          p_duration_minutes: number
+          p_interest_slugs: string[]
+          p_latitude: number
+          p_location: string
+          p_longitude: number
+          p_opening_hours?: string
+          p_safety_considerations: string
+          p_social_level: Database["public"]["Enums"]["social_comfort"]
+          p_source_url?: string
+          p_title: string
+        }
+        Returns: {
+          experience_id: string
+          status: Database["public"]["Enums"]["review_status"]
+        }[]
+      }
+      replace_experience_tags: {
+        Args: { p_id: string; p_interest_slugs: string[] }
+        Returns: string[]
+      }
       resubmit_opportunity: {
         Args: { p_id: string }
         Returns: {
@@ -1502,6 +1683,42 @@ export type Database = {
         Returns: {
           organisation_id: string
           status: Database["public"]["Enums"]["review_status"]
+        }[]
+      }
+      search_experiences: {
+        Args: {
+          p_category?: string
+          p_city?: string
+          p_interest_slugs?: string[]
+          p_keyword?: string
+          p_limit?: number
+          p_max_cost?: number
+          p_offset?: number
+          p_social_level?: Database["public"]["Enums"]["social_comfort"]
+        }
+        Returns: {
+          accessibility_information: string
+          category: string
+          city: string
+          cost: number
+          cover_url: string
+          created_at: string
+          currency: string
+          description: string
+          duration_minutes: number
+          id: string
+          latitude: number
+          location: string
+          longitude: number
+          opening_hours: string
+          safety_considerations: string
+          social_level: Database["public"]["Enums"]["social_comfort"]
+          source_url: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          title: string
+          total_count: number
+          updated_at: string
         }[]
       }
       search_opportunities: {
@@ -1546,6 +1763,13 @@ export type Database = {
           updated_at: string
         }[]
       }
+      set_experience_tags: {
+        Args: { p_id: string; p_interest_slugs: string[] }
+        Returns: {
+          experience_id: string
+          interest_slugs: string[]
+        }[]
+      }
       set_opportunity_tags: {
         Args: { p_id: string; p_interest_slugs: string[] }
         Returns: {
@@ -1578,6 +1802,12 @@ export type Database = {
           status: Database["public"]["Enums"]["review_status"]
         }[]
       }
+      validate_experience_content: {
+        Args: {
+          p_experience: Database["public"]["Tables"]["solo_experiences"]["Row"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       activity_status:
@@ -1599,6 +1829,11 @@ export type Database = {
       budget_preference: "free_only" | "low" | "any"
       category_group: "academic" | "professional" | "personal_development"
       event_format: "online" | "physical" | "hybrid"
+      experience_category:
+        | "art_and_culture"
+        | "slow_experiences"
+        | "learn_something_new"
+        | "outdoor_exploration"
       identity_status: "pending" | "verified" | "rejected" | "expired"
       participant_status: "pending" | "accepted" | "declined" | "withdrawn"
       report_status: "open" | "investigating" | "resolved" | "dismissed"
@@ -1761,6 +1996,12 @@ export const Constants = {
       budget_preference: ["free_only", "low", "any"],
       category_group: ["academic", "professional", "personal_development"],
       event_format: ["online", "physical", "hybrid"],
+      experience_category: [
+        "art_and_culture",
+        "slow_experiences",
+        "learn_something_new",
+        "outdoor_exploration",
+      ],
       identity_status: ["pending", "verified", "rejected", "expired"],
       participant_status: ["pending", "accepted", "declined", "withdrawn"],
       report_status: ["open", "investigating", "resolved", "dismissed"],
