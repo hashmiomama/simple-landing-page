@@ -1,23 +1,36 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { House } from "lucide-react";
 
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { EmptyState } from "@/components/layout/page-states";
+import { KeywordForm } from "@/features/opportunities/browse";
+import { Page } from "@/features/opportunities/ui";
 import { pageMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
-    meta: pageMeta("Home", "Your personalised home for opportunities and plans.", { noindex: true }),
+    meta: pageMeta("Home", "Your personalised home for opportunities and plans.", {
+      noindex: true,
+    }),
   }),
   component: DashboardPage,
 });
 
 function DashboardPage() {
+  const navigate = useNavigate();
   return (
-    <PlaceholderPage
-      icon={House}
-      title="Your home"
-      description="Your personalised picks, deadlines and plans will live here."
-      phase="Phase 2"
-    />
+    <Page title="Your home" intro="Find opportunities and keep track of what interests you.">
+      <div className="mb-6 rounded-3xl border bg-lavender-soft p-4">
+        <KeywordForm
+          onSearch={(keyword) =>
+            void navigate({ to: "/opportunities", search: { keyword: keyword || undefined } })
+          }
+        />
+      </div>
+      <EmptyState
+        icon={House}
+        title="Coming soon"
+        description="Your personalised picks, deadlines and plans will live here."
+      />
+    </Page>
   );
 }

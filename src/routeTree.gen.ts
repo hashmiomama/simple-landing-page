@@ -25,10 +25,16 @@ import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedCommunityRouteImport } from './routes/_authenticated/community'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedExperiencesRouteImport } from './routes/_authenticated/experiences'
+import { Route as AuthenticatedMySubmissionsRouteImport } from './routes/_authenticated/my-submissions'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/saved'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSubmitOpportunityRouteImport } from './routes/_authenticated/submit-opportunity'
+import { Route as OpportunitiesIdRouteImport } from './routes/opportunities_.$id'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
+import { Route as AuthenticatedMySubmissionsIdRouteImport } from './routes/_authenticated/my-submissions_.$id'
+import { Route as AuthenticatedOrganisationListingsRouteImport } from './routes/_authenticated/organisation.listings'
+import { Route as AuthenticatedOrganisationRegisterRouteImport } from './routes/_authenticated/organisation.register'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -110,6 +116,12 @@ const AuthenticatedExperiencesRoute =
     path: '/experiences',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMySubmissionsRoute =
+  AuthenticatedMySubmissionsRouteImport.update({
+    id: '/my-submissions',
+    path: '/my-submissions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
     id: '/notifications',
@@ -126,11 +138,40 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSubmitOpportunityRoute =
+  AuthenticatedSubmitOpportunityRouteImport.update({
+    id: '/submit-opportunity',
+    path: '/submit-opportunity',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
+  id: '/opportunities_/$id',
+  path: '/opportunities/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedMySubmissionsIdRoute =
+  AuthenticatedMySubmissionsIdRouteImport.update({
+    id: '/my-submissions_/$id',
+    path: '/my-submissions/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrganisationListingsRoute =
+  AuthenticatedOrganisationListingsRouteImport.update({
+    id: '/organisation/listings',
+    path: '/organisation/listings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrganisationRegisterRoute =
+  AuthenticatedOrganisationRegisterRouteImport.update({
+    id: '/organisation/register',
+    path: '/organisation/register',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -147,10 +188,16 @@ export interface FileRoutesByFullPath {
   '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/experiences': typeof AuthenticatedExperiencesRoute
+  '/my-submissions': typeof AuthenticatedMySubmissionsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/opportunities/$id': typeof OpportunitiesIdRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
+  '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
+  '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
+  '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -167,10 +214,16 @@ export interface FileRoutesByTo {
   '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/experiences': typeof AuthenticatedExperiencesRoute
+  '/my-submissions': typeof AuthenticatedMySubmissionsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/opportunities/$id': typeof OpportunitiesIdRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
+  '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
+  '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
+  '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -190,10 +243,16 @@ export interface FileRoutesById {
   '/_authenticated/community': typeof AuthenticatedCommunityRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/experiences': typeof AuthenticatedExperiencesRoute
+  '/_authenticated/my-submissions': typeof AuthenticatedMySubmissionsRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/saved': typeof AuthenticatedSavedRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/opportunities_/$id': typeof OpportunitiesIdRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRoute
+  '/_authenticated/my-submissions_/$id': typeof AuthenticatedMySubmissionsIdRoute
+  '/_authenticated/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
+  '/_authenticated/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -212,10 +271,16 @@ export interface FileRouteTypes {
     | '/community'
     | '/dashboard'
     | '/experiences'
+    | '/my-submissions'
     | '/notifications'
     | '/saved'
     | '/settings'
+    | '/submit-opportunity'
+    | '/opportunities/$id'
     | '/admin'
+    | '/my-submissions/$id'
+    | '/organisation/listings'
+    | '/organisation/register'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -232,10 +297,16 @@ export interface FileRouteTypes {
     | '/community'
     | '/dashboard'
     | '/experiences'
+    | '/my-submissions'
     | '/notifications'
     | '/saved'
     | '/settings'
+    | '/submit-opportunity'
+    | '/opportunities/$id'
     | '/admin'
+    | '/my-submissions/$id'
+    | '/organisation/listings'
+    | '/organisation/register'
   id:
     | '__root__'
     | '/'
@@ -254,10 +325,16 @@ export interface FileRouteTypes {
     | '/_authenticated/community'
     | '/_authenticated/dashboard'
     | '/_authenticated/experiences'
+    | '/_authenticated/my-submissions'
     | '/_authenticated/notifications'
     | '/_authenticated/saved'
     | '/_authenticated/settings'
+    | '/_authenticated/submit-opportunity'
+    | '/opportunities_/$id'
     | '/_authenticated/_admin/admin'
+    | '/_authenticated/my-submissions_/$id'
+    | '/_authenticated/organisation/listings'
+    | '/_authenticated/organisation/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -271,6 +348,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  OpportunitiesIdRoute: typeof OpportunitiesIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -387,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExperiencesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/my-submissions': {
+      id: '/_authenticated/my-submissions'
+      path: '/my-submissions'
+      fullPath: '/my-submissions'
+      preLoaderRoute: typeof AuthenticatedMySubmissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
       path: '/notifications'
@@ -408,12 +493,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/submit-opportunity': {
+      id: '/_authenticated/submit-opportunity'
+      path: '/submit-opportunity'
+      fullPath: '/submit-opportunity'
+      preLoaderRoute: typeof AuthenticatedSubmitOpportunityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/opportunities_/$id': {
+      id: '/opportunities_/$id'
+      path: '/opportunities/$id'
+      fullPath: '/opportunities/$id'
+      preLoaderRoute: typeof OpportunitiesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/_admin/admin': {
       id: '/_authenticated/_admin/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminAdminRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/my-submissions_/$id': {
+      id: '/_authenticated/my-submissions_/$id'
+      path: '/my-submissions/$id'
+      fullPath: '/my-submissions/$id'
+      preLoaderRoute: typeof AuthenticatedMySubmissionsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/organisation/listings': {
+      id: '/_authenticated/organisation/listings'
+      path: '/organisation/listings'
+      fullPath: '/organisation/listings'
+      preLoaderRoute: typeof AuthenticatedOrganisationListingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/organisation/register': {
+      id: '/_authenticated/organisation/register'
+      path: '/organisation/register'
+      fullPath: '/organisation/register'
+      preLoaderRoute: typeof AuthenticatedOrganisationRegisterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
@@ -439,9 +559,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommunityRoute: typeof AuthenticatedCommunityRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExperiencesRoute: typeof AuthenticatedExperiencesRoute
+  AuthenticatedMySubmissionsRoute: typeof AuthenticatedMySubmissionsRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedSavedRoute: typeof AuthenticatedSavedRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSubmitOpportunityRoute: typeof AuthenticatedSubmitOpportunityRoute
+  AuthenticatedMySubmissionsIdRoute: typeof AuthenticatedMySubmissionsIdRoute
+  AuthenticatedOrganisationListingsRoute: typeof AuthenticatedOrganisationListingsRoute
+  AuthenticatedOrganisationRegisterRoute: typeof AuthenticatedOrganisationRegisterRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -451,9 +576,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCommunityRoute: AuthenticatedCommunityRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExperiencesRoute: AuthenticatedExperiencesRoute,
+  AuthenticatedMySubmissionsRoute: AuthenticatedMySubmissionsRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedSavedRoute: AuthenticatedSavedRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSubmitOpportunityRoute: AuthenticatedSubmitOpportunityRoute,
+  AuthenticatedMySubmissionsIdRoute: AuthenticatedMySubmissionsIdRoute,
+  AuthenticatedOrganisationListingsRoute:
+    AuthenticatedOrganisationListingsRoute,
+  AuthenticatedOrganisationRegisterRoute:
+    AuthenticatedOrganisationRegisterRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -470,6 +602,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  OpportunitiesIdRoute: OpportunitiesIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

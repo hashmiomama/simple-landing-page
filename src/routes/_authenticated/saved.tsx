@@ -1,21 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bookmark } from "lucide-react";
-
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { SavedOpportunities } from "@/features/opportunities/saved";
 import { pageMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/saved")({
-  head: () => ({ meta: pageMeta("Saved", "Opportunities and experiences you've bookmarked.", { noindex: true }) }),
-  component: SavedPage,
+  head: () => ({
+    meta: pageMeta("Saved", "Opportunities and experiences you've bookmarked.", { noindex: true }),
+  }),
+  component: SavedOpportunities,
 });
-
-function SavedPage() {
-  return (
-    <PlaceholderPage
-      icon={Bookmark}
-      title="Saved"
-      description="Opportunities and experiences you've bookmarked."
-      phase="Phase 3"
-    />
-  );
-}
