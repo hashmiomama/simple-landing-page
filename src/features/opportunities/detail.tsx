@@ -40,6 +40,17 @@ export function OpportunityDetail({ id }: { id: string }) {
     ...detailListing(id, user?.id),
     enabled: validId && status !== "loading",
   });
+  const availability = useQuery({
+    queryKey: ["opportunity-status", id],
+    enabled: validId && detail.isSuccess && !detail.data,
+    queryFn: async ({ signal }) => {
+      const { data, error } = await requireSupabase()
+        .rpc("get_opportunity_status", { p_id: id })
+        .abortSignal(signal);
+      if (error) throw error;
+      return data;
+    },
+  });
   const categories = useQuery(categoryCatalog);
   const submitterId = detail.data?.submitted_by;
   const submitter = useQuery({
@@ -73,12 +84,35 @@ export function OpportunityDetail({ id }: { id: string }) {
       </Page>
     );
   if (!detail.data) {
-    // TODO Phase 4: Use a lifecycle response when the backend exposes expiry on detail links.
+    if (validId && availability.isPending) {
+      return (
+        <Page title="Opportunity">
+          <CardsLoading label="Checking opportunity status" />
+        </Page>
+      );
+    }
+    if (availability.isError || availability.data === "available") {
+      return (
+        <Page title="Opportunity">
+          <ErrorState
+            message="Couldn’t load the opportunity status."
+            onRetry={() => {
+              void detail.refetch();
+              void availability.refetch();
+            }}
+          />
+        </Page>
+      );
+    }
     return (
       <Page title="Opportunity">
         <EmptyState
           icon={Compass}
-          title="This opportunity is unavailable or has expired"
+          title={
+            availability.data === "expired"
+              ? "This opportunity has expired"
+              : "This opportunity is unavailable"
+          }
           description="You can find other open listings in Opportunities."
           action={
             <div className="flex flex-wrap justify-center gap-2">

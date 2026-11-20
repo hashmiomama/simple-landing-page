@@ -9,6 +9,7 @@ import { useAuth } from "@/features/auth/auth-provider";
 
 import { displayDate, ownOrganisation, ownSubmission, ownSubmissions, statusLabels } from "./data";
 import { SubmissionForm } from "./submission-form";
+import { ReviewNotes } from "./review-notes";
 import { CardsLoading, Page } from "./ui";
 
 export function Submissions({ official = false }: { official?: boolean }) {
@@ -94,6 +95,7 @@ function SubmissionList({
             const editable =
               listing.status === "pending" ||
               listing.status === "rejected" ||
+              listing.status === "needs_info" ||
               (!!organisationId && listing.status === "approved");
             return (
               <li
@@ -112,6 +114,9 @@ function SubmissionList({
                       <time dateTime={listing.deadline}>Due {displayDate(listing.deadline)}</time>
                     )}
                   </p>
+                  {(listing.status === "needs_info" || listing.status === "rejected") && (
+                    <ReviewNotes id={listing.id} userId={userId} />
+                  )}
                 </div>
                 {editable && (
                   <Button variant="outline" size="sm" asChild>
@@ -120,7 +125,7 @@ function SubmissionList({
                       params={{ id: listing.id }}
                       aria-label={`Edit ${listing.title}`}
                     >
-                      Edit
+                      {listing.status === "needs_info" ? "Edit and resubmit" : "Edit"}
                     </Link>
                   </Button>
                 )}
@@ -171,7 +176,9 @@ export function EditSubmission({ id }: { id: string }) {
         org.data?.status === "approved" &&
         hasRole("organisation") &&
         listing.status !== "archived"
-      : listing.status === "pending" || listing.status === "rejected");
+      : listing.status === "pending" ||
+        listing.status === "rejected" ||
+        listing.status === "needs_info");
   if (!listing || !canEdit)
     return (
       <Page title="Edit opportunity">

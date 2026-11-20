@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 
 import { RequireAuth } from "@/features/auth/guards";
 import { OnboardingGate } from "@/features/onboarding/onboarding-gate";
@@ -9,11 +9,18 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
+  const adminPath = useLocation({
+    select: ({ pathname }) => pathname === "/admin" || pathname.startsWith("/admin/"),
+  });
   return (
     <RequireAuth>
-      <OnboardingGate>
+      {adminPath ? (
         <Outlet />
-      </OnboardingGate>
+      ) : (
+        <OnboardingGate>
+          <Outlet />
+        </OnboardingGate>
+      )}
     </RequireAuth>
   );
 }

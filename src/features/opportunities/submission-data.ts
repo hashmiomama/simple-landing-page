@@ -63,7 +63,7 @@ export function validateSubmission(
   official?: Organisation,
 ) {
   const schema = submissionSchema.superRefine((data, ctx) => {
-    if (!existing && !data.tags.length)
+    if (!data.tags.length)
       ctx.addIssue({
         code: "custom",
         path: ["tags"],

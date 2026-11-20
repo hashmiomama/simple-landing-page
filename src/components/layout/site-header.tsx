@@ -1,5 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { Bookmark, ChevronDown, ClipboardList, LogOut, Plus, Settings, Shield, UserRound } from "lucide-react";
+import {
+  Bookmark,
+  ChevronDown,
+  ClipboardList,
+  LogOut,
+  Plus,
+  Settings,
+  Shield,
+  UserRound,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -149,7 +158,7 @@ function AccountArea() {
           {hasRole("admin") && (
             <DropdownMenuItem asChild>
               <Link to="/admin">
-                <Shield className="h-4 w-4" aria-hidden /> Administration
+                <Shield className="h-4 w-4" aria-hidden /> Admin
               </Link>
             </DropdownMenuItem>
           )}

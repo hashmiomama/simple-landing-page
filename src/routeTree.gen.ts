@@ -38,6 +38,12 @@ import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMySubmissionsIdRouteImport } from './routes/_authenticated/my-submissions_.$id'
 import { Route as AuthenticatedOrganisationListingsRouteImport } from './routes/_authenticated/organisation.listings'
 import { Route as AuthenticatedOrganisationRegisterRouteImport } from './routes/_authenticated/organisation.register'
+import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
+import { Route as AuthenticatedAdminAdminSplatRouteImport } from './routes/_authenticated/_admin/admin.$'
+import { Route as AuthenticatedAdminAdminAuditLogRouteImport } from './routes/_authenticated/_admin/admin.audit-log'
+import { Route as AuthenticatedAdminAdminOpportunitiesRouteImport } from './routes/_authenticated/_admin/admin.opportunities'
+import { Route as AuthenticatedAdminAdminOrganisationsRouteImport } from './routes/_authenticated/_admin/admin.organisations'
+import { Route as AuthenticatedAdminAdminOpportunitiesIdRouteImport } from './routes/_authenticated/_admin/admin.opportunities_.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -191,6 +197,42 @@ const AuthenticatedOrganisationRegisterRoute =
     path: '/organisation/register',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminAdminIndexRoute =
+  AuthenticatedAdminAdminIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminSplatRoute =
+  AuthenticatedAdminAdminSplatRouteImport.update({
+    id: '/$',
+    path: '/$',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminAuditLogRoute =
+  AuthenticatedAdminAdminAuditLogRouteImport.update({
+    id: '/audit-log',
+    path: '/audit-log',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminOpportunitiesRoute =
+  AuthenticatedAdminAdminOpportunitiesRouteImport.update({
+    id: '/opportunities',
+    path: '/opportunities',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminOrganisationsRoute =
+  AuthenticatedAdminAdminOrganisationsRouteImport.update({
+    id: '/organisations',
+    path: '/organisations',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminOpportunitiesIdRoute =
+  AuthenticatedAdminAdminOpportunitiesIdRouteImport.update({
+    id: '/opportunities_/$id',
+    path: '/opportunities/$id',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -216,10 +258,16 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
-  '/admin': typeof AuthenticatedAdminAdminRoute
+  '/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
+  '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
+  '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
+  '/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
+  '/admin/organisations': typeof AuthenticatedAdminAdminOrganisationsRoute
+  '/admin/': typeof AuthenticatedAdminAdminIndexRoute
+  '/admin/opportunities/$id': typeof AuthenticatedAdminAdminOpportunitiesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -245,10 +293,15 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
-  '/admin': typeof AuthenticatedAdminAdminRoute
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
+  '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
+  '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
+  '/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
+  '/admin/organisations': typeof AuthenticatedAdminAdminOrganisationsRoute
+  '/admin': typeof AuthenticatedAdminAdminIndexRoute
+  '/admin/opportunities/$id': typeof AuthenticatedAdminAdminOpportunitiesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -277,10 +330,16 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
   '/opportunities_/$id': typeof OpportunitiesIdRoute
-  '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRoute
+  '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/_authenticated/my-submissions_/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/_authenticated/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/_authenticated/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
+  '/_authenticated/_admin/admin/$': typeof AuthenticatedAdminAdminSplatRoute
+  '/_authenticated/_admin/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
+  '/_authenticated/_admin/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
+  '/_authenticated/_admin/admin/organisations': typeof AuthenticatedAdminAdminOrganisationsRoute
+  '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
+  '/_authenticated/_admin/admin/opportunities_/$id': typeof AuthenticatedAdminAdminOpportunitiesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -312,6 +371,12 @@ export interface FileRouteTypes {
     | '/my-submissions/$id'
     | '/organisation/listings'
     | '/organisation/register'
+    | '/admin/$'
+    | '/admin/audit-log'
+    | '/admin/opportunities'
+    | '/admin/organisations'
+    | '/admin/'
+    | '/admin/opportunities/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -337,10 +402,15 @@ export interface FileRouteTypes {
     | '/settings'
     | '/submit-opportunity'
     | '/opportunities/$id'
-    | '/admin'
     | '/my-submissions/$id'
     | '/organisation/listings'
     | '/organisation/register'
+    | '/admin/$'
+    | '/admin/audit-log'
+    | '/admin/opportunities'
+    | '/admin/organisations'
+    | '/admin'
+    | '/admin/opportunities/$id'
   id:
     | '__root__'
     | '/'
@@ -372,6 +442,12 @@ export interface FileRouteTypes {
     | '/_authenticated/my-submissions_/$id'
     | '/_authenticated/organisation/listings'
     | '/_authenticated/organisation/register'
+    | '/_authenticated/_admin/admin/$'
+    | '/_authenticated/_admin/admin/audit-log'
+    | '/_authenticated/_admin/admin/opportunities'
+    | '/_authenticated/_admin/admin/organisations'
+    | '/_authenticated/_admin/admin/'
+    | '/_authenticated/_admin/admin/opportunities_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -593,16 +669,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrganisationRegisterRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_admin/admin/': {
+      id: '/_authenticated/_admin/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
+    '/_authenticated/_admin/admin/$': {
+      id: '/_authenticated/_admin/admin/$'
+      path: '/$'
+      fullPath: '/admin/$'
+      preLoaderRoute: typeof AuthenticatedAdminAdminSplatRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
+    '/_authenticated/_admin/admin/audit-log': {
+      id: '/_authenticated/_admin/admin/audit-log'
+      path: '/audit-log'
+      fullPath: '/admin/audit-log'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAuditLogRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
+    '/_authenticated/_admin/admin/opportunities': {
+      id: '/_authenticated/_admin/admin/opportunities'
+      path: '/opportunities'
+      fullPath: '/admin/opportunities'
+      preLoaderRoute: typeof AuthenticatedAdminAdminOpportunitiesRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
+    '/_authenticated/_admin/admin/organisations': {
+      id: '/_authenticated/_admin/admin/organisations'
+      path: '/organisations'
+      fullPath: '/admin/organisations'
+      preLoaderRoute: typeof AuthenticatedAdminAdminOrganisationsRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
+    '/_authenticated/_admin/admin/opportunities_/$id': {
+      id: '/_authenticated/_admin/admin/opportunities_/$id'
+      path: '/opportunities/$id'
+      fullPath: '/admin/opportunities/$id'
+      preLoaderRoute: typeof AuthenticatedAdminAdminOpportunitiesIdRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminAdminRouteChildren {
+  AuthenticatedAdminAdminSplatRoute: typeof AuthenticatedAdminAdminSplatRoute
+  AuthenticatedAdminAdminAuditLogRoute: typeof AuthenticatedAdminAdminAuditLogRoute
+  AuthenticatedAdminAdminOpportunitiesRoute: typeof AuthenticatedAdminAdminOpportunitiesRoute
+  AuthenticatedAdminAdminOrganisationsRoute: typeof AuthenticatedAdminAdminOrganisationsRoute
+  AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
+  AuthenticatedAdminAdminOpportunitiesIdRoute: typeof AuthenticatedAdminAdminOpportunitiesIdRoute
+}
+
+const AuthenticatedAdminAdminRouteChildren: AuthenticatedAdminAdminRouteChildren =
+  {
+    AuthenticatedAdminAdminSplatRoute: AuthenticatedAdminAdminSplatRoute,
+    AuthenticatedAdminAdminAuditLogRoute: AuthenticatedAdminAdminAuditLogRoute,
+    AuthenticatedAdminAdminOpportunitiesRoute:
+      AuthenticatedAdminAdminOpportunitiesRoute,
+    AuthenticatedAdminAdminOrganisationsRoute:
+      AuthenticatedAdminAdminOrganisationsRoute,
+    AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
+    AuthenticatedAdminAdminOpportunitiesIdRoute:
+      AuthenticatedAdminAdminOpportunitiesIdRoute,
+  }
+
+const AuthenticatedAdminAdminRouteWithChildren =
+  AuthenticatedAdminAdminRoute._addFileChildren(
+    AuthenticatedAdminAdminRouteChildren,
+  )
+
 interface AuthenticatedAdminRouteRouteChildren {
-  AuthenticatedAdminAdminRoute: typeof AuthenticatedAdminAdminRoute
+  AuthenticatedAdminAdminRoute: typeof AuthenticatedAdminAdminRouteWithChildren
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
-    AuthenticatedAdminAdminRoute: AuthenticatedAdminAdminRoute,
+    AuthenticatedAdminAdminRoute: AuthenticatedAdminAdminRouteWithChildren,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =

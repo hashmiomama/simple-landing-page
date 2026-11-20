@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/features/auth/auth-provider";
+import { requireSupabase } from "@/lib/backend";
 
 import {
   categoryCatalog,
@@ -18,6 +19,7 @@ import {
   type StoredListing,
 } from "./data";
 import { modes } from "./search-state";
+import { ReviewNotes } from "./review-notes";
 import {
   coverError,
   coverTypes,
@@ -105,6 +107,7 @@ function SubmissionFields({
   const upload = useRef<{ file: File; url: string } | null>(null);
   const org = !existing && asOrganisation ? (official ?? undefined) : undefined;
 
+  const resubmitting = existing?.status === "needs_info";
   const save = useMutation({
     mutationFn: async (values: SubmissionValues) => {
       let cover = removeCover ? null : (existing?.cover_url ?? null);
@@ -121,11 +124,30 @@ function SubmissionFields({
         }
         cover = upload.current.url;
       }
-      return existing
-        ? updateListing(userId, existing, values, cover)
-        : submitListing(values, cover, org?.id);
+      if (!existing) return submitListing(values, cover, org?.id);
+      const updated = await updateListing(userId, existing, values, cover);
+      const backend = requireSupabase();
+      if (tags.length !== initialTags.length || tags.some((slug) => !initialTags.includes(slug))) {
+        const { error } = await backend.rpc("set_opportunity_tags", {
+          p_id: existing.id,
+          p_interest_slugs: tags,
+        });
+        if (error)
+          throw new Error(`Listing fields were saved. Tags could not be saved. ${error.message}`);
+      }
+      if (!resubmitting) return updated;
+      const { data, error } = await backend
+        .rpc("resubmit_opportunity", { p_id: existing.id })
+        .single();
+      if (error)
+        throw new Error(
+          `Your changes were saved. The listing could not be resubmitted. ${error.message}`,
+        );
+      return { ...data, resubmitted: true as const };
     },
     onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["admin"] });
+      void client.invalidateQueries({ queryKey: ["opportunity-status"] });
       void client.invalidateQueries({ queryKey: ["own-submissions", userId] });
       void client.invalidateQueries({ queryKey: ["own-submission", userId] });
       void client.invalidateQueries({ queryKey: ["opportunity-search"] });
@@ -138,7 +160,15 @@ function SubmissionFields({
 
   if (save.isSuccess)
     return (
-      <Page title={existing ? "Changes saved" : "Opportunity submitted"}>
+      <Page
+        title={
+          "resubmitted" in save.data
+            ? "Opportunity resubmitted"
+            : existing
+              ? "Changes saved"
+              : "Opportunity submitted"
+        }
+      >
         <EmptyState
           icon={CircleCheck}
           title={existing ? "Your listing was updated" : "Thanks for sharing an opportunity"}
@@ -184,9 +214,11 @@ function SubmissionFields({
     <Page
       title={existing ? "Edit opportunity" : "Submit an opportunity"}
       intro={
-        existing?.organisation_id && existing.status === "approved"
-          ? "Saving changes sends this approved listing back to review."
-          : "Share an opportunity and its official source so it can be reviewed."
+        resubmitting
+          ? "Update the requested information and send your listing back for review."
+          : existing?.organisation_id && existing.status === "approved"
+            ? "Saving changes sends this approved listing back to review."
+            : "Share an opportunity and its official source so it can be reviewed."
       }
       actions={
         <Button variant="outline" asChild>
@@ -194,6 +226,11 @@ function SubmissionFields({
         </Button>
       }
     >
+      {existing && (resubmitting || existing.status === "rejected") && (
+        <div className="mb-4 max-w-3xl">
+          <ReviewNotes id={existing.id} userId={userId} />
+        </div>
+      )}
       <form
         noValidate
         className="max-w-3xl"
@@ -302,34 +339,15 @@ function SubmissionFields({
             {textbox("cost", "Cost or funding", existing?.cost_or_funding)}
           </FormSection>
           <FormSection title="Interest tags and cover">
-            {existing ? (
-              // TODO Phase 4: Enable tag edits when the backend provides an atomic edit endpoint.
-              <div>
-                <p className="text-sm font-medium">Interest tags</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {tags.length
-                    ? tags
-                        .map(
-                          (slug) => interests.find((option) => option.slug === slug)?.name ?? slug,
-                        )
-                        .join(", ")
-                    : "No tags listed"}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Tags can’t be changed after submission.
-                </p>
-              </div>
-            ) : (
-              <fieldset>
-                <legend className="mb-2 text-sm font-medium">Interest tags</legend>
-                {interests.length ? (
-                  <Chips options={interests} selected={tags} onChange={setTags} />
-                ) : (
-                  <p className="text-sm text-muted-foreground">No interest tags are available.</p>
-                )}
-                {message("tags")}
-              </fieldset>
-            )}
+            <fieldset>
+              <legend className="mb-2 text-sm font-medium">Interest tags</legend>
+              {interests.length ? (
+                <Chips options={interests} selected={tags} onChange={setTags} />
+              ) : (
+                <p className="text-sm text-muted-foreground">No interest tags are available.</p>
+              )}
+              {message("tags")}
+            </fieldset>
             <div>
               <Field label="Cover image (optional)">
                 <Input
@@ -392,9 +410,11 @@ function SubmissionFields({
               ? uploading
                 ? "Uploading…"
                 : "Saving…"
-              : existing
-                ? "Save changes"
-                : "Submit for review"}
+              : resubmitting
+                ? "Save and resubmit"
+                : existing
+                  ? "Save changes"
+                  : "Submit for review"}
           </Button>
         </fieldset>
       </form>

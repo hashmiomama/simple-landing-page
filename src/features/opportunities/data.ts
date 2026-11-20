@@ -22,6 +22,7 @@ export function locationLabel(listing: Pick<Listing, "format" | "location">) {
   return listing.format === "online" ? "Online" : `${listing.location} · ${modes[listing.format]}`;
 }
 export const statusLabels = {
+  needs_info: "Needs more information",
   pending: "Pending review",
   approved: "Approved",
   rejected: "Rejected",
@@ -136,7 +137,7 @@ export const ownSubmissions = (userId: string, organisationId?: string) =>
         .from("opportunities")
         .select(listingFields)
         .eq("submitted_by", userId)
-        .in("status", ["pending", "approved", "rejected"]);
+        .in("status", ["pending", "approved", "rejected", "needs_info"]);
       if (organisationId) query = query.eq("organisation_id", organisationId);
       const { data, error } = await query.order("created_at", { ascending: false });
       if (error) throw error;
