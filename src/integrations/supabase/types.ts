@@ -261,8 +261,10 @@ export type Database = {
       }
       applications: {
         Row: {
+          applied_at: string | null
           created_at: string
           id: string
+          interview_at: string | null
           notes: string | null
           opportunity_id: string
           status: Database["public"]["Enums"]["application_status"]
@@ -270,8 +272,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          applied_at?: string | null
           created_at?: string
           id?: string
+          interview_at?: string | null
           notes?: string | null
           opportunity_id: string
           status?: Database["public"]["Enums"]["application_status"]
@@ -279,8 +283,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          applied_at?: string | null
           created_at?: string
           id?: string
+          interview_at?: string | null
           notes?: string | null
           opportunity_id?: string
           status?: Database["public"]["Enums"]["application_status"]
@@ -393,6 +399,7 @@ export type Database = {
       notification_preferences: {
         Row: {
           activity_updates: boolean
+          channel_frequencies: Json
           created_at: string
           deadline_reminders: boolean
           email_enabled: boolean
@@ -403,6 +410,7 @@ export type Database = {
         }
         Insert: {
           activity_updates?: boolean
+          channel_frequencies?: Json
           created_at?: string
           deadline_reminders?: boolean
           email_enabled?: boolean
@@ -413,6 +421,7 @@ export type Database = {
         }
         Update: {
           activity_updates?: boolean
+          channel_frequencies?: Json
           created_at?: string
           deadline_reminders?: boolean
           email_enabled?: boolean
@@ -435,8 +444,10 @@ export type Database = {
         Row: {
           body: string | null
           created_at: string
+          dedupe_key: string | null
           id: string
           kind: string
+          link_path: string | null
           read_at: string | null
           title: string
           updated_at: string
@@ -445,8 +456,10 @@ export type Database = {
         Insert: {
           body?: string | null
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           kind: string
+          link_path?: string | null
           read_at?: string | null
           title: string
           updated_at?: string
@@ -455,8 +468,10 @@ export type Database = {
         Update: {
           body?: string | null
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           kind?: string
+          link_path?: string | null
           read_at?: string | null
           title?: string
           updated_at?: string
@@ -883,7 +898,10 @@ export type Database = {
         Row: {
           application_id: string | null
           created_at: string
+          done: boolean
           id: string
+          note: string | null
+          opportunity_id: string | null
           remind_at: string
           sent_at: string | null
           title: string
@@ -893,7 +911,10 @@ export type Database = {
         Insert: {
           application_id?: string | null
           created_at?: string
+          done?: boolean
           id?: string
+          note?: string | null
+          opportunity_id?: string | null
           remind_at: string
           sent_at?: string | null
           title: string
@@ -903,7 +924,10 @@ export type Database = {
         Update: {
           application_id?: string | null
           created_at?: string
+          done?: boolean
           id?: string
+          note?: string | null
+          opportunity_id?: string | null
           remind_at?: string
           sent_at?: string | null
           title?: string
@@ -917,6 +941,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "applications"
             referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "reminders_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "reminders_user_id_fkey"
@@ -1460,6 +1491,58 @@ export type Database = {
       }
       admin_verification_report: { Args: { p_id: string }; Returns: Json }
       bootstrap_account: { Args: { account_id: string }; Returns: undefined }
+      create_notification: {
+        Args: {
+          p_body?: string
+          p_link?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      create_reminder: {
+        Args: {
+          p_application_id?: string
+          p_note?: string
+          p_opportunity_id?: string
+          p_remind_at: string
+          p_title: string
+        }
+        Returns: {
+          application_id: string | null
+          created_at: string
+          done: boolean
+          id: string
+          note: string | null
+          opportunity_id: string | null
+          remind_at: string
+          sent_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "reminders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      delete_application: { Args: { p_id: string }; Returns: boolean }
+      delete_reminder: { Args: { p_id: string }; Returns: boolean }
+      enqueue_notification: {
+        Args: {
+          p_body: string
+          p_dedupe_key: string
+          p_link: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      generate_deadline_notifications: { Args: never; Returns: number }
       get_dashboard_summary: {
         Args: never
         Returns: {
@@ -1493,6 +1576,25 @@ export type Database = {
           tags: Json
           title: string
           updated_at: string
+        }[]
+      }
+      get_my_calendar: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          done: boolean
+          event_at: string
+          event_type: string
+          id: string
+          link_path: string
+          title: string
+        }[]
+      }
+      get_my_notification_preferences: {
+        Args: never
+        Returns: {
+          category: Database["public"]["Enums"]["notification_category"]
+          channel: Database["public"]["Enums"]["notification_channel"]
+          frequency: Database["public"]["Enums"]["notification_frequency"]
         }[]
       }
       get_opportunity: {
@@ -1597,6 +1699,54 @@ export type Database = {
       }
       is_http_url: { Args: { p_url: string }; Returns: boolean }
       is_username_available: { Args: { p_username: string }; Returns: boolean }
+      list_my_applications: {
+        Args: { p_status?: Database["public"]["Enums"]["application_status"] }
+        Returns: {
+          applied_at: string
+          created_at: string
+          deadline: string
+          id: string
+          interview_at: string
+          is_expired: boolean
+          notes: string
+          opportunity_id: string
+          opportunity_title: string
+          organisation_name: string
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      list_my_notifications: {
+        Args: { p_limit?: number; p_offset?: number; p_unread_only?: boolean }
+        Returns: {
+          notifications: Json
+          total_count: number
+          unread_count: number
+        }[]
+      }
+      list_my_reminders: {
+        Args: never
+        Returns: {
+          application_id: string | null
+          created_at: string
+          done: boolean
+          id: string
+          note: string | null
+          opportunity_id: string | null
+          remind_at: string
+          sent_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "reminders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       list_opportunity_review_notes: {
         Args: { p_id: string }
         Returns: {
@@ -1614,6 +1764,22 @@ export type Database = {
           saved_at: string
           title: string
         }[]
+      }
+      mark_all_notifications_read: { Args: never; Returns: number }
+      mark_notification_read: {
+        Args: { p_id: string }
+        Returns: {
+          id: string
+          read_at: string
+        }[]
+      }
+      notification_frequency_for: {
+        Args: {
+          p_category: Database["public"]["Enums"]["notification_category"]
+          p_channel: Database["public"]["Enums"]["notification_channel"]
+          p_user_id: string
+        }
+        Returns: Database["public"]["Enums"]["notification_frequency"]
       }
       opportunity_is_public: {
         Args: {
@@ -1770,6 +1936,18 @@ export type Database = {
           interest_slugs: string[]
         }[]
       }
+      set_my_notification_preferences: {
+        Args: {
+          p_category: Database["public"]["Enums"]["notification_category"]
+          p_channel: Database["public"]["Enums"]["notification_channel"]
+          p_frequency: Database["public"]["Enums"]["notification_frequency"]
+        }
+        Returns: {
+          category: Database["public"]["Enums"]["notification_category"]
+          channel: Database["public"]["Enums"]["notification_channel"]
+          frequency: Database["public"]["Enums"]["notification_frequency"]
+        }[]
+      }
       set_opportunity_tags: {
         Args: { p_id: string; p_interest_slugs: string[] }
         Returns: {
@@ -1802,6 +1980,62 @@ export type Database = {
           status: Database["public"]["Enums"]["review_status"]
         }[]
       }
+      update_reminder: {
+        Args: {
+          p_application_id?: string
+          p_done?: boolean
+          p_id: string
+          p_note?: string
+          p_opportunity_id?: string
+          p_remind_at: string
+          p_title: string
+        }
+        Returns: {
+          application_id: string | null
+          created_at: string
+          done: boolean
+          id: string
+          note: string | null
+          opportunity_id: string | null
+          remind_at: string
+          sent_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "reminders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      upsert_application: {
+        Args: {
+          p_applied_at?: string
+          p_interview_at?: string
+          p_notes?: string
+          p_opportunity_id: string
+          p_status: Database["public"]["Enums"]["application_status"]
+        }
+        Returns: {
+          applied_at: string | null
+          created_at: string
+          id: string
+          interview_at: string | null
+          notes: string | null
+          opportunity_id: string
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "applications"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       validate_experience_content: {
         Args: {
           p_experience: Database["public"]["Tables"]["solo_experiences"]["Row"]
@@ -1821,11 +2055,12 @@ export type Database = {
       application_status:
         | "interested"
         | "preparing"
-        | "submitted"
+        | "applied"
         | "interview"
         | "accepted"
         | "rejected"
         | "withdrawn"
+        | "shortlisted"
       budget_preference: "free_only" | "low" | "any"
       category_group: "academic" | "professional" | "personal_development"
       event_format: "online" | "physical" | "hybrid"
@@ -1835,6 +2070,15 @@ export type Database = {
         | "learn_something_new"
         | "outdoor_exploration"
       identity_status: "pending" | "verified" | "rejected" | "expired"
+      notification_category:
+        | "new_opportunities"
+        | "deadline_reminders"
+        | "verification_updates"
+        | "activity_updates"
+        | "group_messages"
+        | "account"
+      notification_channel: "in_app" | "email"
+      notification_frequency: "instant" | "daily" | "off"
       participant_status: "pending" | "accepted" | "declined" | "withdrawn"
       report_status: "open" | "investigating" | "resolved" | "dismissed"
       review_status:
@@ -1987,11 +2231,12 @@ export const Constants = {
       application_status: [
         "interested",
         "preparing",
-        "submitted",
+        "applied",
         "interview",
         "accepted",
         "rejected",
         "withdrawn",
+        "shortlisted",
       ],
       budget_preference: ["free_only", "low", "any"],
       category_group: ["academic", "professional", "personal_development"],
@@ -2003,6 +2248,16 @@ export const Constants = {
         "outdoor_exploration",
       ],
       identity_status: ["pending", "verified", "rejected", "expired"],
+      notification_category: [
+        "new_opportunities",
+        "deadline_reminders",
+        "verification_updates",
+        "activity_updates",
+        "group_messages",
+        "account",
+      ],
+      notification_channel: ["in_app", "email"],
+      notification_frequency: ["instant", "daily", "off"],
       participant_status: ["pending", "accepted", "declined", "withdrawn"],
       report_status: ["open", "investigating", "resolved", "dismissed"],
       review_status: [
