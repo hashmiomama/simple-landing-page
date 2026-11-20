@@ -28,6 +28,11 @@ import { myPoints } from "@/features/points/data";
 import { APP_NAME } from "@/lib/app-config";
 
 export function SiteHeader() {
+  const { status } = useAuth();
+  const discoveryLink =
+    "rounded-full px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:px-4";
+  const discoveryVisibility = status === "signed_in" ? "hidden sm:inline-flex" : "inline-flex";
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
       <div className="mx-auto flex min-h-16 max-w-6xl flex-wrap items-center justify-between gap-x-2 gap-y-1 px-4 py-2 sm:px-8">
@@ -40,14 +45,14 @@ export function SiteHeader() {
         <nav aria-label="Main" className="flex flex-wrap items-center gap-1 sm:gap-2">
           <Link
             to="/opportunities"
-            className="inline-flex rounded-full px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:px-4"
+            className={`${discoveryVisibility} ${discoveryLink}`}
             activeProps={{ className: "text-foreground" }}
           >
             Opportunities
           </Link>
           <Link
             to="/experiences"
-            className="inline-flex rounded-full px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:px-4"
+            className={`${discoveryVisibility} ${discoveryLink}`}
             activeProps={{ className: "text-foreground" }}
           >
             Experiences
@@ -138,11 +143,6 @@ function AccountArea() {
             {role && <Badge variant="secondary">{ROLE_LABELS[role]}</Badge>}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link to="/dashboard" className="sm:hidden">
-              Home
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/profile">
               <UserRound className="h-4 w-4" aria-hidden /> My profile

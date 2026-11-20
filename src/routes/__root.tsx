@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/layout/site-header";
+import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/features/auth/auth-provider";
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/app-config";
@@ -138,6 +139,7 @@ function RootComponent() {
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>
+          <MobileNavigation />
         </div>
         <Toaster position="top-center" />
       </AuthProvider>
