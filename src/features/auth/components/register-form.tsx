@@ -17,11 +17,12 @@ import { Input } from "@/components/ui/input";
 import { requireSupabase } from "@/lib/backend";
 
 import { toFriendlyAuthError } from "../errors";
+import { loginRedirectUrl } from "../redirect";
 import { PASSWORD_MIN_LENGTH, registerSchema, type RegisterValues } from "../schemas";
 import { FormAlert } from "./form-alert";
 import { PasswordInput } from "./password-input";
 
-export function RegisterForm() {
+export function RegisterForm({ redirectTo }: { redirectTo?: string | undefined } = {}) {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const form = useForm<RegisterValues>({
@@ -36,7 +37,7 @@ export function RegisterForm() {
       const { data, error: signUpError } = await requireSupabase().auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/login` },
+        options: { emailRedirectTo: loginRedirectUrl(window.location.origin, redirectTo) },
       });
       if (signUpError) {
         setError(toFriendlyAuthError(signUpError).message);
@@ -48,7 +49,7 @@ export function RegisterForm() {
         return;
       }
       if (!data.session) {
-        await navigate({ to: "/verify-email", search: { email } });
+        await navigate({ to: "/verify-email", search: { email, ...(redirectTo ? { redirect: redirectTo } : {}) } });
       }
       // With a session, the auth listener signs the user in and the page redirects.
     } catch (err) {

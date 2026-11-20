@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/features/auth/auth-provider";
+import { DashboardActivities } from "@/features/activities/dashboard";
 import { DashboardExperiences } from "@/features/experiences/dashboard-experiences";
 import { opportunityCategories } from "@/features/onboarding/data";
 import { ProfileCompletionCard } from "@/features/profile/profile-completion-card";
@@ -134,6 +135,7 @@ function DashboardContent({
       </section>
 
       <ProfileCompletionCard userId={userId} />
+      <DashboardActivities userId={userId} />
 
       {points.isSuccess && (
         <section className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border bg-card px-5 py-4 shadow-soft">

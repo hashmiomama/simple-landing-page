@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ClipboardCheck, FileText, LayoutDashboard, Building2, Mountain } from "lucide-react";
+import { ClipboardCheck, FileText, LayoutDashboard, Building2, Mountain, UsersRound } from "lucide-react";
 import type { ReactNode } from "react";
 
 export const modules = [
@@ -7,11 +7,11 @@ export const modules = [
   { to: "/admin/opportunities", label: "Opportunity verification", icon: ClipboardCheck },
   { to: "/admin/experiences", label: "Experience verification", icon: Mountain },
   { to: "/admin/organisations", label: "Organisation verification", icon: Building2 },
+  { to: "/admin/activities", label: "Activity moderation", icon: UsersRound },
   { to: "/admin/audit-log", label: "Audit log", icon: FileText },
 ] as const;
 const upcoming = [
   "Identity verification status",
-  "Activity moderation",
   "Reports and complaints",
   "User management",
   "Platform analytics",

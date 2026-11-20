@@ -23,6 +23,7 @@ const cultures = {
   application_deadline: { label: "Application deadline", tone: "bg-accent-soft text-success" },
   reminder: { label: "Reminder", tone: "bg-muted text-foreground" },
   interview: { label: "Interview", tone: "bg-primary-strong text-primary-foreground" },
+  activity: { label: "Activity", tone: "bg-chart-3 text-foreground" },
 };
 const monthFormat = new Intl.DateTimeFormat("en-PK", {
   month: "long",

@@ -22,7 +22,7 @@ function LoginPage() {
         footer={
           <>
             New here?{" "}
-            <Link to="/register" className="text-link">
+            <Link to="/register" search={redirect ? { redirect } : {}} className="text-link">
               Create an account
             </Link>
           </>

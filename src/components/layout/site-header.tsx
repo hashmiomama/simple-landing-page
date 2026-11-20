@@ -57,6 +57,13 @@ export function SiteHeader() {
           >
             Experiences
           </Link>
+          <Link
+            to="/community"
+            className={`${status === "signed_in" ? "hidden md:inline-flex" : "inline-flex"} ${discoveryLink}`}
+            activeProps={{ className: "text-foreground" }}
+          >
+            Community
+          </Link>
           <AccountArea />
         </nav>
       </div>
@@ -111,7 +118,7 @@ function AccountArea() {
             <Link to="/recommend-experience">Recommend an experience</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/community">Propose an activity</Link>
+            <Link to="/community/new">Propose an activity</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/my-submissions">My submissions</Link>
@@ -166,6 +173,9 @@ function AccountArea() {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/calendar">My Calendar</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="md:hidden">
+            <Link to="/community">Community</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/settings/notifications">Notification settings</Link>

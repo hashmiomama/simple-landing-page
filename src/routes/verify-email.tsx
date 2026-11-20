@@ -9,6 +9,7 @@ import { useAuth } from "@/features/auth/auth-provider";
 import { AuthLayout } from "@/features/auth/components/auth-layout";
 import { FormAlert } from "@/features/auth/components/form-alert";
 import { toFriendlyAuthError } from "@/features/auth/errors";
+import { loginRedirectUrl } from "@/features/auth/redirect";
 import { emailSchema } from "@/features/auth/schemas";
 import { requireSupabase } from "@/lib/backend";
 import { pageMeta } from "@/lib/seo";
@@ -16,21 +17,23 @@ import { pageMeta } from "@/lib/seo";
 const RESEND_COOLDOWN_SECONDS = 60;
 
 export const Route = createFileRoute("/verify-email")({
-  validateSearch: (search: Record<string, unknown>): { email?: string } => 
-    typeof search["email"] === "string" ? { email: search["email"] } : {},
+  validateSearch: (search: Record<string, unknown>): { email?: string; redirect?: string } => ({
+    ...(typeof search["email"] === "string" ? { email: search["email"] } : {}),
+    ...(typeof search["redirect"] === "string" ? { redirect: search["redirect"] } : {}),
+  }),
   head: () => ({ meta: pageMeta("Confirm your email", "Confirm your email address to finish signing up.", { noindex: true }) }),
   component: VerifyEmailPage,
 });
 
 function VerifyEmailPage() {
-  const { email: initialEmail } = Route.useSearch();
+  const { email: initialEmail, redirect } = Route.useSearch();
   const { status } = useAuth();
 
   if (status === "signed_in") {
     return (
       <AuthLayout title="Your email is confirmed" description="You're all set.">
         <Button asChild className="w-full">
-          <Link to="/dashboard">Continue</Link>
+          {redirect ? <Link to="/login" search={{ redirect }}>Continue</Link> : <Link to="/dashboard">Continue</Link>}
         </Button>
       </AuthLayout>
     );
@@ -52,7 +55,7 @@ function VerifyEmailPage() {
       footer={
         <>
           Already confirmed?{" "}
-          <Link to="/login" className="text-link">
+          <Link to="/login" search={redirect ? { redirect } : {}} className="text-link">
             Sign in
           </Link>
         </>
@@ -62,12 +65,12 @@ function VerifyEmailPage() {
         <MailCheck className="h-5 w-5 shrink-0 text-primary-strong" aria-hidden />
         <p>It can take a few minutes to arrive. Check your spam or promotions folder too.</p>
       </div>
-      <ResendForm initialEmail={initialEmail ?? ""} />
+      <ResendForm initialEmail={initialEmail ?? ""} redirectTo={redirect} />
     </AuthLayout>
   );
 }
 
-function ResendForm({ initialEmail }: { initialEmail: string }) {
+function ResendForm({ initialEmail, redirectTo }: { initialEmail: string; redirectTo: string | undefined }) {
   const [email, setEmail] = useState(initialEmail);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +99,7 @@ function ResendForm({ initialEmail }: { initialEmail: string }) {
       const { error: resendError } = await requireSupabase().auth.resend({
         type: "signup",
         email: parsed.data,
-        options: { emailRedirectTo: `${window.location.origin}/login` },
+        options: { emailRedirectTo: loginRedirectUrl(window.location.origin, redirectTo) },
       });
       if (resendError) {
         setError(toFriendlyAuthError(resendError).message);

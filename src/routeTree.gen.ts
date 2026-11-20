@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ExperiencesRouteImport } from './routes/experiences'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -23,7 +24,6 @@ import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
 import { Route as AuthenticatedApplicationsRouteImport } from './routes/_authenticated/applications'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
-import { Route as AuthenticatedCommunityRouteImport } from './routes/_authenticated/community'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMyExperienceRecommendationsRouteImport } from './routes/_authenticated/my-experience-recommendations'
 import { Route as AuthenticatedMySubmissionsRouteImport } from './routes/_authenticated/my-submissions'
@@ -35,9 +35,12 @@ import { Route as AuthenticatedRecommendExperienceRouteImport } from './routes/_
 import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/saved'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSubmitOpportunityRouteImport } from './routes/_authenticated/submit-opportunity'
+import { Route as CommunityIdRouteImport } from './routes/community_.$id'
 import { Route as ExperiencesIdRouteImport } from './routes/experiences_.$id'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities_.$id'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
+import { Route as AuthenticatedCommunityMineRouteImport } from './routes/_authenticated/community_.mine'
+import { Route as AuthenticatedCommunityNewRouteImport } from './routes/_authenticated/community_.new'
 import { Route as AuthenticatedMyExperienceRecommendationsIdRouteImport } from './routes/_authenticated/my-experience-recommendations_.$id'
 import { Route as AuthenticatedMySubmissionsIdRouteImport } from './routes/_authenticated/my-submissions_.$id'
 import { Route as AuthenticatedOrganisationListingsRouteImport } from './routes/_authenticated/organisation.listings'
@@ -46,6 +49,7 @@ import { Route as AuthenticatedProfilePointsRouteImport } from './routes/_authen
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings_.notifications'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminSplatRouteImport } from './routes/_authenticated/_admin/admin.$'
+import { Route as AuthenticatedAdminAdminActivitiesRouteImport } from './routes/_authenticated/_admin/admin.activities'
 import { Route as AuthenticatedAdminAdminAuditLogRouteImport } from './routes/_authenticated/_admin/admin.audit-log'
 import { Route as AuthenticatedAdminAdminExperiencesRouteImport } from './routes/_authenticated/_admin/admin.experiences'
 import { Route as AuthenticatedAdminAdminOpportunitiesRouteImport } from './routes/_authenticated/_admin/admin.opportunities'
@@ -59,6 +63,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExperiencesRoute = ExperiencesRouteImport.update({
@@ -119,11 +128,6 @@ const AuthenticatedApplicationsRoute =
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCommunityRoute = AuthenticatedCommunityRouteImport.update({
-  id: '/community',
-  path: '/community',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -187,6 +191,11 @@ const AuthenticatedSubmitOpportunityRoute =
     path: '/submit-opportunity',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const CommunityIdRoute = CommunityIdRouteImport.update({
+  id: '/community_/$id',
+  path: '/community/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExperiencesIdRoute = ExperiencesIdRouteImport.update({
   id: '/experiences_/$id',
   path: '/experiences/$id',
@@ -202,6 +211,18 @@ const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedCommunityMineRoute =
+  AuthenticatedCommunityMineRouteImport.update({
+    id: '/community_/mine',
+    path: '/community/mine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCommunityNewRoute =
+  AuthenticatedCommunityNewRouteImport.update({
+    id: '/community_/new',
+    path: '/community/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMyExperienceRecommendationsIdRoute =
   AuthenticatedMyExperienceRecommendationsIdRouteImport.update({
     id: '/my-experience-recommendations_/$id',
@@ -250,6 +271,12 @@ const AuthenticatedAdminAdminSplatRoute =
     path: '/$',
     getParentRoute: () => AuthenticatedAdminAdminRoute,
   } as any)
+const AuthenticatedAdminAdminActivitiesRoute =
+  AuthenticatedAdminAdminActivitiesRouteImport.update({
+    id: '/activities',
+    path: '/activities',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
 const AuthenticatedAdminAdminAuditLogRoute =
   AuthenticatedAdminAdminAuditLogRouteImport.update({
     id: '/audit-log',
@@ -283,6 +310,7 @@ const AuthenticatedAdminAdminOpportunitiesIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/community': typeof CommunityRoute
   '/experiences': typeof ExperiencesRoute
   '/forbidden': typeof ForbiddenRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -294,7 +322,6 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof VerifyEmailRoute
   '/applications': typeof AuthenticatedApplicationsRoute
   '/calendar': typeof AuthenticatedCalendarRoute
-  '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-experience-recommendations': typeof AuthenticatedMyExperienceRecommendationsRoute
   '/my-submissions': typeof AuthenticatedMySubmissionsRoute
@@ -306,9 +333,12 @@ export interface FileRoutesByFullPath {
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/community/$id': typeof CommunityIdRoute
   '/experiences/$id': typeof ExperiencesIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/admin': typeof AuthenticatedAdminAdminRouteWithChildren
+  '/community/mine': typeof AuthenticatedCommunityMineRoute
+  '/community/new': typeof AuthenticatedCommunityNewRoute
   '/my-experience-recommendations/$id': typeof AuthenticatedMyExperienceRecommendationsIdRoute
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
@@ -316,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/profile/points': typeof AuthenticatedProfilePointsRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
+  '/admin/activities': typeof AuthenticatedAdminAdminActivitiesRoute
   '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
   '/admin/experiences': typeof AuthenticatedAdminAdminExperiencesRoute
   '/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
@@ -325,6 +356,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/community': typeof CommunityRoute
   '/experiences': typeof ExperiencesRoute
   '/forbidden': typeof ForbiddenRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -336,7 +368,6 @@ export interface FileRoutesByTo {
   '/verify-email': typeof VerifyEmailRoute
   '/applications': typeof AuthenticatedApplicationsRoute
   '/calendar': typeof AuthenticatedCalendarRoute
-  '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-experience-recommendations': typeof AuthenticatedMyExperienceRecommendationsRoute
   '/my-submissions': typeof AuthenticatedMySubmissionsRoute
@@ -348,8 +379,11 @@ export interface FileRoutesByTo {
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/community/$id': typeof CommunityIdRoute
   '/experiences/$id': typeof ExperiencesIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/community/mine': typeof AuthenticatedCommunityMineRoute
+  '/community/new': typeof AuthenticatedCommunityNewRoute
   '/my-experience-recommendations/$id': typeof AuthenticatedMyExperienceRecommendationsIdRoute
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
@@ -357,6 +391,7 @@ export interface FileRoutesByTo {
   '/profile/points': typeof AuthenticatedProfilePointsRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
+  '/admin/activities': typeof AuthenticatedAdminAdminActivitiesRoute
   '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
   '/admin/experiences': typeof AuthenticatedAdminAdminExperiencesRoute
   '/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
@@ -368,6 +403,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/community': typeof CommunityRoute
   '/experiences': typeof ExperiencesRoute
   '/forbidden': typeof ForbiddenRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -380,7 +416,6 @@ export interface FileRoutesById {
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/applications': typeof AuthenticatedApplicationsRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
-  '/_authenticated/community': typeof AuthenticatedCommunityRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-experience-recommendations': typeof AuthenticatedMyExperienceRecommendationsRoute
   '/_authenticated/my-submissions': typeof AuthenticatedMySubmissionsRoute
@@ -392,9 +427,12 @@ export interface FileRoutesById {
   '/_authenticated/saved': typeof AuthenticatedSavedRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/community_/$id': typeof CommunityIdRoute
   '/experiences_/$id': typeof ExperiencesIdRoute
   '/opportunities_/$id': typeof OpportunitiesIdRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRouteWithChildren
+  '/_authenticated/community_/mine': typeof AuthenticatedCommunityMineRoute
+  '/_authenticated/community_/new': typeof AuthenticatedCommunityNewRoute
   '/_authenticated/my-experience-recommendations_/$id': typeof AuthenticatedMyExperienceRecommendationsIdRoute
   '/_authenticated/my-submissions_/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/_authenticated/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
@@ -402,6 +440,7 @@ export interface FileRoutesById {
   '/_authenticated/profile_/points': typeof AuthenticatedProfilePointsRoute
   '/_authenticated/settings_/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/_admin/admin/$': typeof AuthenticatedAdminAdminSplatRoute
+  '/_authenticated/_admin/admin/activities': typeof AuthenticatedAdminAdminActivitiesRoute
   '/_authenticated/_admin/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
   '/_authenticated/_admin/admin/experiences': typeof AuthenticatedAdminAdminExperiencesRoute
   '/_authenticated/_admin/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
@@ -413,6 +452,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/community'
     | '/experiences'
     | '/forbidden'
     | '/forgot-password'
@@ -424,7 +464,6 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/applications'
     | '/calendar'
-    | '/community'
     | '/dashboard'
     | '/my-experience-recommendations'
     | '/my-submissions'
@@ -436,9 +475,12 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/submit-opportunity'
+    | '/community/$id'
     | '/experiences/$id'
     | '/opportunities/$id'
     | '/admin'
+    | '/community/mine'
+    | '/community/new'
     | '/my-experience-recommendations/$id'
     | '/my-submissions/$id'
     | '/organisation/listings'
@@ -446,6 +488,7 @@ export interface FileRouteTypes {
     | '/profile/points'
     | '/settings/notifications'
     | '/admin/$'
+    | '/admin/activities'
     | '/admin/audit-log'
     | '/admin/experiences'
     | '/admin/opportunities'
@@ -455,6 +498,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/community'
     | '/experiences'
     | '/forbidden'
     | '/forgot-password'
@@ -466,7 +510,6 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/applications'
     | '/calendar'
-    | '/community'
     | '/dashboard'
     | '/my-experience-recommendations'
     | '/my-submissions'
@@ -478,8 +521,11 @@ export interface FileRouteTypes {
     | '/saved'
     | '/settings'
     | '/submit-opportunity'
+    | '/community/$id'
     | '/experiences/$id'
     | '/opportunities/$id'
+    | '/community/mine'
+    | '/community/new'
     | '/my-experience-recommendations/$id'
     | '/my-submissions/$id'
     | '/organisation/listings'
@@ -487,6 +533,7 @@ export interface FileRouteTypes {
     | '/profile/points'
     | '/settings/notifications'
     | '/admin/$'
+    | '/admin/activities'
     | '/admin/audit-log'
     | '/admin/experiences'
     | '/admin/opportunities'
@@ -497,6 +544,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/community'
     | '/experiences'
     | '/forbidden'
     | '/forgot-password'
@@ -509,7 +557,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin'
     | '/_authenticated/applications'
     | '/_authenticated/calendar'
-    | '/_authenticated/community'
     | '/_authenticated/dashboard'
     | '/_authenticated/my-experience-recommendations'
     | '/_authenticated/my-submissions'
@@ -521,9 +568,12 @@ export interface FileRouteTypes {
     | '/_authenticated/saved'
     | '/_authenticated/settings'
     | '/_authenticated/submit-opportunity'
+    | '/community_/$id'
     | '/experiences_/$id'
     | '/opportunities_/$id'
     | '/_authenticated/_admin/admin'
+    | '/_authenticated/community_/mine'
+    | '/_authenticated/community_/new'
     | '/_authenticated/my-experience-recommendations_/$id'
     | '/_authenticated/my-submissions_/$id'
     | '/_authenticated/organisation/listings'
@@ -531,6 +581,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile_/points'
     | '/_authenticated/settings_/notifications'
     | '/_authenticated/_admin/admin/$'
+    | '/_authenticated/_admin/admin/activities'
     | '/_authenticated/_admin/admin/audit-log'
     | '/_authenticated/_admin/admin/experiences'
     | '/_authenticated/_admin/admin/opportunities'
@@ -542,6 +593,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  CommunityRoute: typeof CommunityRoute
   ExperiencesRoute: typeof ExperiencesRoute
   ForbiddenRoute: typeof ForbiddenRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -551,6 +603,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  CommunityIdRoute: typeof CommunityIdRoute
   ExperiencesIdRoute: typeof ExperiencesIdRoute
   OpportunitiesIdRoute: typeof OpportunitiesIdRoute
 }
@@ -569,6 +622,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/experiences': {
@@ -655,13 +715,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCalendarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/community': {
-      id: '/_authenticated/community'
-      path: '/community'
-      fullPath: '/community'
-      preLoaderRoute: typeof AuthenticatedCommunityRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -739,6 +792,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSubmitOpportunityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/community_/$id': {
+      id: '/community_/$id'
+      path: '/community/$id'
+      fullPath: '/community/$id'
+      preLoaderRoute: typeof CommunityIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/experiences_/$id': {
       id: '/experiences_/$id'
       path: '/experiences/$id'
@@ -759,6 +819,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminAdminRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/community_/mine': {
+      id: '/_authenticated/community_/mine'
+      path: '/community/mine'
+      fullPath: '/community/mine'
+      preLoaderRoute: typeof AuthenticatedCommunityMineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/community_/new': {
+      id: '/_authenticated/community_/new'
+      path: '/community/new'
+      fullPath: '/community/new'
+      preLoaderRoute: typeof AuthenticatedCommunityNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/my-experience-recommendations_/$id': {
       id: '/_authenticated/my-experience-recommendations_/$id'
@@ -816,6 +890,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminSplatRouteImport
       parentRoute: typeof AuthenticatedAdminAdminRoute
     }
+    '/_authenticated/_admin/admin/activities': {
+      id: '/_authenticated/_admin/admin/activities'
+      path: '/activities'
+      fullPath: '/admin/activities'
+      preLoaderRoute: typeof AuthenticatedAdminAdminActivitiesRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
     '/_authenticated/_admin/admin/audit-log': {
       id: '/_authenticated/_admin/admin/audit-log'
       path: '/audit-log'
@@ -856,6 +937,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminAdminRouteChildren {
   AuthenticatedAdminAdminSplatRoute: typeof AuthenticatedAdminAdminSplatRoute
+  AuthenticatedAdminAdminActivitiesRoute: typeof AuthenticatedAdminAdminActivitiesRoute
   AuthenticatedAdminAdminAuditLogRoute: typeof AuthenticatedAdminAdminAuditLogRoute
   AuthenticatedAdminAdminExperiencesRoute: typeof AuthenticatedAdminAdminExperiencesRoute
   AuthenticatedAdminAdminOpportunitiesRoute: typeof AuthenticatedAdminAdminOpportunitiesRoute
@@ -867,6 +949,8 @@ interface AuthenticatedAdminAdminRouteChildren {
 const AuthenticatedAdminAdminRouteChildren: AuthenticatedAdminAdminRouteChildren =
   {
     AuthenticatedAdminAdminSplatRoute: AuthenticatedAdminAdminSplatRoute,
+    AuthenticatedAdminAdminActivitiesRoute:
+      AuthenticatedAdminAdminActivitiesRoute,
     AuthenticatedAdminAdminAuditLogRoute: AuthenticatedAdminAdminAuditLogRoute,
     AuthenticatedAdminAdminExperiencesRoute:
       AuthenticatedAdminAdminExperiencesRoute,
@@ -902,7 +986,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedApplicationsRoute: typeof AuthenticatedApplicationsRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
-  AuthenticatedCommunityRoute: typeof AuthenticatedCommunityRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMyExperienceRecommendationsRoute: typeof AuthenticatedMyExperienceRecommendationsRoute
   AuthenticatedMySubmissionsRoute: typeof AuthenticatedMySubmissionsRoute
@@ -914,6 +997,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSavedRoute: typeof AuthenticatedSavedRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSubmitOpportunityRoute: typeof AuthenticatedSubmitOpportunityRoute
+  AuthenticatedCommunityMineRoute: typeof AuthenticatedCommunityMineRoute
+  AuthenticatedCommunityNewRoute: typeof AuthenticatedCommunityNewRoute
   AuthenticatedMyExperienceRecommendationsIdRoute: typeof AuthenticatedMyExperienceRecommendationsIdRoute
   AuthenticatedMySubmissionsIdRoute: typeof AuthenticatedMySubmissionsIdRoute
   AuthenticatedOrganisationListingsRoute: typeof AuthenticatedOrganisationListingsRoute
@@ -926,7 +1011,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedApplicationsRoute: AuthenticatedApplicationsRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
-  AuthenticatedCommunityRoute: AuthenticatedCommunityRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMyExperienceRecommendationsRoute:
     AuthenticatedMyExperienceRecommendationsRoute,
@@ -939,6 +1023,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSavedRoute: AuthenticatedSavedRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSubmitOpportunityRoute: AuthenticatedSubmitOpportunityRoute,
+  AuthenticatedCommunityMineRoute: AuthenticatedCommunityMineRoute,
+  AuthenticatedCommunityNewRoute: AuthenticatedCommunityNewRoute,
   AuthenticatedMyExperienceRecommendationsIdRoute:
     AuthenticatedMyExperienceRecommendationsIdRoute,
   AuthenticatedMySubmissionsIdRoute: AuthenticatedMySubmissionsIdRoute,
@@ -957,6 +1043,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  CommunityRoute: CommunityRoute,
   ExperiencesRoute: ExperiencesRoute,
   ForbiddenRoute: ForbiddenRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
@@ -966,6 +1053,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  CommunityIdRoute: CommunityIdRoute,
   ExperiencesIdRoute: ExperiencesIdRoute,
   OpportunitiesIdRoute: OpportunitiesIdRoute,
 }

@@ -19,8 +19,8 @@ export function Page({
   return (
     <div className="mx-auto w-full max-w-6xl px-5 pb-14 pt-8 sm:px-8 sm:pt-12">
       <header className="mb-7 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold sm:text-4xl">{title}</h1>
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold [overflow-wrap:anywhere] sm:text-4xl">{title}</h1>
           {intro && <p className="mt-2 max-w-xl text-muted-foreground">{intro}</p>}
         </div>
         {actions}
