@@ -209,6 +209,23 @@ For SQL-only extension setup, run `create extension if not exists pg_cron with s
 
 To run without Cron, a trusted caller can execute `select public.generate_deadline_notifications();`. It returns the number of notifications created. It covers future public deadlines within 72 hours and due, unfinished custom reminders. The unique keys include the deadline or reminder time so repeats are deduplicated and a rescheduled time can produce a new alert. To try this locally, save or track the **[Demo] Paper Lantern Portfolio Clinic** fixture with your own test account. The fixture itself adds no user-scoped data.
 
+## Contribution points
+
+The [contribution points migration](migrations/20261120000800_contribution_points.sql) awards 10 points by default for each opportunity or solo experience approved through the existing admin review RPCs. Admins can update the award amounts in `point_rules`. Official organisation listings earn the same amount, and admins earn zero for approving their own listings.
+
+A rejection reverses any previous award for that listing once, using the original amount. Reapproval leaves the original award and reversal in place. Requests for more information leave the balance unchanged. The migration backfills eligible listings already approved at migration time and skips notifications for those awards. New awards and reversals send a `points` notification through the account preference category and link to `/profile/points`.
+
+Members can read their own ledger rows. Ledger writes are internal. Levels start at Newcomer (0), Explorer (20), Contributor (50), Trailblazer (100), and Pathfinder (200). Displayed balances have a minimum of zero.
+
+| Signed-in RPC | Return columns or value |
+| --- | --- |
+| `get_my_points()` | `total_points`, `level_name`, `next_level_name`, `points_to_next_level`, `approved_opportunities`, `approved_experiences`. Both next-level fields are null at Pathfinder. Counts reflect the caller's currently approved listings. |
+| `list_my_point_history(p_limit integer default 20, p_offset integer default 0)` | `id`, `reason`, `points`, `source_table`, `source_id`, `source_title`, `created_at`, `total_count`. Newest first. The title is null when the listing is outside the caller's read access. The count appears on each returned row. |
+| `get_points_leaderboard(p_limit integer default 10)` | `username`, `avatar_url`, `total_points`, `level_name`. Includes balances of at least one point, highest first. |
+| `level_for_points(p_total bigint)` | Level name as text. |
+
+To apply pending migrations to an existing local stack while preserving its data, run `supabase start` followed by `supabase migration up`.
+
 ## Table reference
 
 | Table | Purpose |
@@ -238,6 +255,8 @@ To run without Cron, a trusted caller can execute `select public.generate_deadli
 | `activity_feedback` | Post-activity participant feedback. |
 | `notifications` | In-app notification inbox. |
 | `notification_preferences` | Per-member notification settings. |
+| `point_transactions` | Private contribution ledger with awards, reversals and corrections. |
+| `point_rules` | Point amounts for approved contributions. |
 | `identity_verifications` | Verification status and opaque provider reference. |
 | `reports` | Safety and content reports. |
 | `blocked_users` | Directed user blocking relationships. |
