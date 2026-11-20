@@ -6,10 +6,12 @@ import { categoryName, costLabel, socialLabels, type Experience } from "./data";
 export function ExperienceCard({
   item,
   match,
+  marker,
   children,
 }: {
   item: Experience;
   match?: number;
+  marker?: ReactNode;
   children?: ReactNode;
 }) {
   return (
@@ -23,6 +25,7 @@ export function ExperienceCard({
             {socialLabels[item.social_level]}
           </span>
         )}
+        {marker}
       </div>
       <h3 className="break-words text-lg font-bold">
         <Link className="hover:underline" to="/experiences/$id" params={{ id: item.id }}>

@@ -31,6 +31,7 @@ import {
   type Listing,
 } from "./data";
 import { SaveButton } from "./save-button";
+import { ApplyLink } from "@/features/planning/apply";
 import { modes, pageSize, sorts, type Search } from "./search-state";
 import { CardsLoading, Chips, Field, Page, selectClass } from "./ui";
 
@@ -386,6 +387,9 @@ function ListingCard({ item, category }: { item: Listing; category: string }) {
       </div>
       <div className="mt-auto">
         <SaveButton id={item.id} title={item.title} />
+        <div className="mt-2">
+          <ApplyLink id={item.id} source={item.source_url} />
+        </div>
       </div>
     </article>
   );

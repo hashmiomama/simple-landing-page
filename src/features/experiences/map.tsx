@@ -10,15 +10,23 @@ export type ExperiencePin = {
   position: [number, number];
   title: string;
   city?: string;
+  number?: number;
+  category?: string;
 };
 export function ExperienceMap({
   pins,
   onPick,
   label,
+  activeId,
+  onPinSelect,
+  resetView,
 }: {
   pins: ExperiencePin[];
   onPick?: (latitude: number, longitude: number) => void;
   label: string;
+  activeId?: string | undefined;
+  onPinSelect?: (id: string) => void;
+  resetView?: number;
 }) {
   const fallback = (
     <div role="status">
@@ -29,7 +37,14 @@ export function ExperienceMap({
   return (
     <ClientOnly fallback={fallback}>
       <Suspense fallback={fallback}>
-        <LeafletMap pins={pins} onPick={onPick} label={label} />
+        <LeafletMap
+          pins={pins}
+          onPick={onPick}
+          label={label}
+          activeId={activeId}
+          onPinSelect={onPinSelect}
+          resetView={resetView}
+        />
       </Suspense>
     </ClientOnly>
   );

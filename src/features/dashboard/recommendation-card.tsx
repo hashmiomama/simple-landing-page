@@ -1,6 +1,7 @@
 import { Bookmark, CalendarDays, MapPin } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ApplyLink } from "@/features/planning/apply";
 
 import { formatDeadline, type Recommendation } from "./data";
 
@@ -98,6 +99,9 @@ export function RecommendationCard({
           <Bookmark className={saved ? "fill-current" : undefined} aria-hidden />
           {saved ? "Saved" : "Save"}
         </Button>
+        <div className="mt-2">
+          <ApplyLink id={opportunity.id} source={opportunity.source_url} />
+        </div>
       </div>
     </article>
   );

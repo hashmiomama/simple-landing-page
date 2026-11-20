@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Landmark, Mountain, Palette } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ErrorState } from "@/components/layout/page-states";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Pagination } from "@/features/admin/ui";
 import { interestCatalog } from "@/features/opportunities/data";
 import { CardsLoading, Chips, Field, Page, selectClass } from "@/features/opportunities/ui";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { ExperienceCard } from "./cards";
 import {
   browseExperiences,
   categories,
+  mapCategoryColor,
   mapPoint,
   pageSize,
   socialLabels,
@@ -34,14 +36,44 @@ export function ExperienceBrowse({
   const page = search.page ?? 1;
   const count = results.data?.[0]?.total_count ?? 0;
   const showingMap = search.view === "map";
+  const mobile = useIsMobile();
+  const [hovered, setHovered] = useState<string>();
+  const [focused, setFocused] = useState<string>();
+  const [selected, setSelected] = useState<string>();
+  const [resetView, setResetView] = useState(0);
+  const [scrollTarget, setScrollTarget] = useState<string>();
   const pins = useMemo(
     () =>
-      (results.data ?? []).flatMap((item) => {
+      (results.data ?? []).flatMap((item, index) => {
         const position = mapPoint(item.latitude, item.longitude);
-        return position ? [{ id: item.id, title: item.title, city: item.city, position }] : [];
+        return position
+          ? [
+              {
+                id: item.id,
+                title: item.title,
+                city: item.city,
+                position,
+                number: index + 1,
+                category: item.category,
+              },
+            ]
+          : [];
       }),
     [results.data],
   );
+  useEffect(() => {
+    if (!scrollTarget || (mobile && showingMap)) return;
+    const frame = requestAnimationFrame(() => {
+      const card = document.getElementById(`experience-result-${scrollTarget}`);
+      card?.focus({ preventScroll: true });
+      card?.scrollIntoView({
+        block: "nearest",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      });
+      setScrollTarget(undefined);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [mobile, showingMap, scrollTarget]);
   return (
     <Page title="Experiences" intro="Find something to do on your own, at your own pace.">
       <div
@@ -88,7 +120,7 @@ export function ExperienceBrowse({
             ? `${count} ${count === 1 ? "experience" : "experiences"}`
             : "Experience results"}
         </p>
-        <div role="group" aria-label="Results view" className="flex gap-2">
+        <div role="group" aria-label="Results view" className="flex gap-2 md:hidden">
           <Button
             size="sm"
             variant={showingMap ? "outline" : "soft"}
@@ -121,23 +153,95 @@ export function ExperienceBrowse({
                 Clear filters
               </Button>
             </div>
-          ) : showingMap ? (
-            <>
-              <ExperienceMap pins={pins} label="Map of experiences on this page" />
-              {!pins.length && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  These experiences do not have map coordinates. Switch to List to view them.
-                </p>
-              )}
-            </>
           ) : (
-            <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {results.data.map((item) => (
-                <li key={item.id}>
-                  <ExperienceCard item={item} />
-                </li>
-              ))}
-            </ul>
+            <div className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+              <ul
+                className={`gap-3 md:grid-cols-1 ${showingMap ? "hidden md:grid" : "grid sm:grid-cols-2"}`}
+              >
+                {results.data.map((item, index) => (
+                  <li
+                    key={item.id}
+                    id={`experience-result-${item.id}`}
+                    tabIndex={-1}
+                    onPointerEnter={() => setHovered(item.id)}
+                    onPointerLeave={() => setHovered(undefined)}
+                    onFocus={() => setFocused(item.id)}
+                    onBlur={(event) => {
+                      if (!event.currentTarget.contains(event.relatedTarget)) setFocused(undefined);
+                    }}
+                    className={`relative scroll-mt-36 rounded-3xl ${selected === item.id ? "ring-2 ring-primary-strong" : ""}`}
+                  >
+                    <ExperienceCard
+                      item={item}
+                      marker={
+                        mapPoint(item.latitude, item.longitude) ? (
+                          <span
+                            className={`ml-auto grid size-6 shrink-0 place-items-center rounded-full text-xs font-bold ${mapCategoryColor(item.category)}`}
+                          >
+                            <span className="sr-only">Map marker </span>
+                            {index + 1}
+                          </span>
+                        ) : null
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+              <section
+                className={`min-w-0 rounded-3xl border bg-card p-3 md:sticky md:top-28 md:block ${showingMap ? "" : "hidden"}`}
+                aria-label="Experience results map"
+              >
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="font-bold">Explore the map</h2>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setResetView((value) => value + 1);
+                      setSelected(undefined);
+                    }}
+                  >
+                    Reset view
+                  </Button>
+                </div>
+                <p className="mb-2 text-sm text-muted-foreground">
+                  Select a numbered pin to find its card. On desktop, hover or focus a card to
+                  highlight its pin.
+                </p>
+                {(!mobile || showingMap) && (
+                  <ExperienceMap
+                    pins={pins}
+                    label="Map of experiences on this page"
+                    activeId={hovered ?? focused ?? selected}
+                    resetView={resetView}
+                    onPinSelect={(id) => {
+                      setSelected(id);
+                      setScrollTarget(id);
+                      if (mobile && showingMap) update({ ...search, view: undefined });
+                    }}
+                  />
+                )}
+                <ul
+                  aria-label="Map categories"
+                  className="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-xs"
+                >
+                  {categories.map(({ slug, name }) => (
+                    <li key={slug} className="flex items-center gap-1.5">
+                      <span
+                        className={`size-3 rounded-full border ${mapCategoryColor(slug)}`}
+                        aria-hidden
+                      />
+                      {name}
+                    </li>
+                  ))}
+                </ul>
+                {!pins.length && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    These experiences do not have map coordinates.
+                  </p>
+                )}
+              </section>
+            </div>
           )}
           {page > 1 || count > pageSize ? (
             <Pagination

@@ -11,6 +11,7 @@ import { useAuth } from "@/features/auth/auth-provider";
 import { DashboardExperiences } from "@/features/experiences/dashboard-experiences";
 import { opportunityCategories } from "@/features/onboarding/data";
 import { ProfileCompletionCard } from "@/features/profile/profile-completion-card";
+import { applications, upcomingDeadlines } from "@/features/planning/data";
 
 import {
   dashboardSummary,
@@ -52,6 +53,8 @@ function DashboardContent({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const summary = useQuery(dashboardSummary(userId));
+  const tracked = useQuery(applications(userId));
+  const deadlines = upcomingDeadlines(summary.data?.deadlines ?? [], tracked.data ?? []);
   const recommended = useQuery(recommendations(userId));
   const bookmarks = useQuery(savedOpportunities(userId));
   const categories = useQuery(opportunityCategories);
@@ -164,9 +167,9 @@ function DashboardContent({
             <h2 id="upcoming-heading" className="mb-4 text-2xl font-bold">
               Upcoming deadlines
             </h2>
-            {summary.data.deadlines.length ? (
+            {deadlines.length ? (
               <ul className="divide-y rounded-3xl border bg-card px-5 shadow-soft">
-                {summary.data.deadlines.map(({ opportunity_id, title, deadline }) => (
+                {deadlines.map(({ opportunity_id, title, deadline }) => (
                   <li
                     key={opportunity_id}
                     className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-4"
@@ -181,7 +184,7 @@ function DashboardContent({
             ) : (
               <EmptyState
                 icon={CalendarDays}
-                title="No upcoming saved deadlines"
+                title="No upcoming deadlines"
                 description="Save an opportunity with a deadline to see it here."
               />
             )}

@@ -1,7 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
 
@@ -11,6 +11,31 @@ import LeafletMap from "./leaflet-map";
 afterEach(cleanup);
 
 describe("Solo experiences", () => {
+  it("numbers discovery markers, colours them by category, and selects their card", async () => {
+    const select = vi.fn();
+    render(
+      <LeafletMap
+        label="Karachi map"
+        pins={[
+          {
+            id: "gallery",
+            title: "Demo gallery",
+            position: karachi,
+            category: "art_and_culture",
+            number: 1,
+          },
+        ]}
+        activeId="gallery"
+        onPinSelect={select}
+      />,
+    );
+    const marker = await screen.findByTitle("1. Demo gallery");
+    expect(marker).toHaveTextContent("1");
+    expect(marker.querySelector("span")).toHaveClass("bg-primary-strong", "ring-2");
+    fireEvent.click(marker);
+    expect(select).toHaveBeenCalledWith("gallery");
+  });
+
   it("passes the URL filters and free-only cost to the search RPC", () => {
     const filters = searchSchema.parse({
       keyword: "gallery",

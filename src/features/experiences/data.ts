@@ -10,6 +10,18 @@ export const categories = [
   { slug: "learn_something_new", name: "Learn something new" },
   { slug: "outdoor_exploration", name: "Outdoor exploration" },
 ] as const satisfies readonly { slug: Enums<"experience_category">; name: string }[];
+const mapColors = {
+  art_and_culture: "bg-primary-strong text-primary-foreground",
+  slow_experiences: "bg-chart-4 text-foreground",
+  learn_something_new: "bg-chart-3 text-foreground",
+  outdoor_exploration: "bg-chart-2 text-primary-foreground",
+} as const satisfies Record<Enums<"experience_category">, string>;
+
+export function mapCategoryColor(category: string) {
+  return Object.hasOwn(mapColors, category)
+    ? mapColors[category as keyof typeof mapColors]
+    : "bg-foreground text-background";
+}
 export const categorySchema = z.enum([
   "art_and_culture",
   "slow_experiences",

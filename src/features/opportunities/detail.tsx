@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { Compass, ExternalLink, Flag, Link2 } from "lucide-react";
+import { Compass, Flag, Link2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -18,6 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/features/auth/auth-provider";
+import { ApplyLink, TrackButton } from "@/features/planning/apply";
+import { ReminderAction } from "@/features/planning/reminder-actions";
 import { requireSupabase } from "@/lib/backend";
 
 import {
@@ -128,9 +130,20 @@ export function OpportunityDetail({ id }: { id: string }) {
               >
                 Go back
               </Button>
+              {availability.data === "expired" && (
+                <>
+                  <TrackButton id={id} />
+                  <ReminderAction title="Opportunity reminder" opportunity={id} />
+                </>
+              )}
             </div>
           }
         />
+        {availability.data === "expired" && (
+          <div className="mt-4">
+            <ApplyLink id={id} expired />
+          </div>
+        )}
       </Page>
     );
   }
@@ -151,16 +164,11 @@ export function OpportunityDetail({ id }: { id: string }) {
             className="max-h-96 w-full rounded-3xl border object-contain bg-card"
           />
         )}
-        <div className="flex flex-wrap items-center gap-2">
-          {source && (
-            <Button className="bg-primary-strong" asChild>
-              <a href={source} target="_blank" rel="noopener noreferrer">
-                Apply on the official website <ExternalLink aria-hidden />
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>
-            </Button>
-          )}
+        <ApplyLink id={item.id} source={source || null} primary />
+        <div className="flex flex-wrap items-start gap-2">
           <SaveButton id={item.id} title={item.title} saved={item.saved} />
+          <TrackButton id={item.id} />
+          <ReminderAction title={`Deadline: ${item.title}`} opportunity={item.id} />
           <ShareButton />
           {user && <ReportButton id={item.id} />}
         </div>

@@ -5,6 +5,7 @@ import { Bookmark } from "lucide-react";
 import { EmptyState, ErrorState } from "@/components/layout/page-states";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-provider";
+import { ApplyForListing, TrackButton } from "@/features/planning/apply";
 
 import { displayDate, savedListings } from "./data";
 import { useSaveAction } from "./save-button";
@@ -70,8 +71,18 @@ function SavedContent({ userId }: { userId: string }) {
                     </span>
                   )}
                 </p>
+                <div className="mt-2">
+                  <ApplyForListing
+                    id={item.opportunity_id}
+                    userId={userId}
+                    expired={item.is_expired}
+                  />
+                </div>
               </div>
-              <Unsave userId={userId} id={item.opportunity_id} title={item.title} />
+              <div className="flex flex-wrap items-start gap-2">
+                <TrackButton id={item.opportunity_id} />
+                <Unsave userId={userId} id={item.opportunity_id} title={item.title} />
+              </div>
             </li>
           ))}
         </ul>

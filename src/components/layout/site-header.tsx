@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/features/auth/auth-provider";
 import { ROLE_LABELS } from "@/features/auth/roles";
+import { NotificationBell } from "@/features/notifications/inbox";
 import { APP_NAME } from "@/lib/app-config";
 
 export function SiteHeader() {
@@ -86,6 +87,7 @@ function AccountArea() {
       <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
         <Link to="/saved">Saved</Link>
       </Button>
+      <NotificationBell />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" aria-label="Create" className="px-2.5 sm:px-4">
@@ -149,6 +151,15 @@ function AccountArea() {
             <Link to="/saved">
               <Bookmark className="h-4 w-4" aria-hidden /> Saved
             </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/applications">My Applications</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/calendar">My Calendar</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/settings/notifications">Notification settings</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/organisation/register">
