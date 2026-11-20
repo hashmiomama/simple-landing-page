@@ -490,6 +490,7 @@ export type Database = {
           location: string
           organisation_id: string | null
           organisation_name: string
+          search_document: unknown
           source_url: string
           starts_at: string | null
           status: Database["public"]["Enums"]["review_status"]
@@ -514,6 +515,7 @@ export type Database = {
           location: string
           organisation_id?: string | null
           organisation_name: string
+          search_document?: unknown
           source_url: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["review_status"]
@@ -538,6 +540,7 @@ export type Database = {
           location?: string
           organisation_id?: string | null
           organisation_name?: string
+          search_document?: unknown
           source_url?: string
           starts_at?: string | null
           status?: Database["public"]["Enums"]["review_status"]
@@ -630,9 +633,15 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          evidence_notes: string | null
           id: string
           name: string
+          official_email: string | null
+          organisation_type: string | null
           owner_id: string
+          representative_email: string | null
+          representative_name: string | null
+          representative_title: string | null
           status: Database["public"]["Enums"]["review_status"]
           updated_at: string
           website_url: string | null
@@ -640,9 +649,15 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          evidence_notes?: string | null
           id?: string
           name: string
-          owner_id: string
+          official_email?: string | null
+          organisation_type?: string | null
+          owner_id?: string
+          representative_email?: string | null
+          representative_name?: string | null
+          representative_title?: string | null
           status?: Database["public"]["Enums"]["review_status"]
           updated_at?: string
           website_url?: string | null
@@ -650,9 +665,15 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          evidence_notes?: string | null
           id?: string
           name?: string
+          official_email?: string | null
+          organisation_type?: string | null
           owner_id?: string
+          representative_email?: string | null
+          representative_name?: string | null
+          representative_title?: string | null
           status?: Database["public"]["Enums"]["review_status"]
           updated_at?: string
           website_url?: string | null
@@ -661,7 +682,7 @@ export type Database = {
           {
             foreignKeyName: "organisations_owner_id_fkey"
             columns: ["owner_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1263,6 +1284,35 @@ export type Database = {
           upcoming_deadlines: Json
         }[]
       }
+      get_opportunity: {
+        Args: { p_id: string }
+        Returns: {
+          category_slug: string
+          city: string
+          cost_or_funding: string
+          country: string
+          cover_url: string
+          created_at: string
+          deadline: string
+          description: string
+          eligibility: string
+          ends_at: string
+          format: Database["public"]["Enums"]["event_format"]
+          id: string
+          last_verified_at: string
+          location: string
+          organisation_id: string
+          organisation_name: string
+          saved: boolean
+          source_url: string
+          starts_at: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          tags: Json
+          title: string
+          updated_at: string
+        }[]
+      }
       get_recommended_opportunities: {
         Args: { p_limit?: number }
         Returns: {
@@ -1301,7 +1351,114 @@ export type Database = {
         Args: { role: Database["public"]["Enums"]["app_role"]; user_id: string }
         Returns: boolean
       }
+      is_http_url: { Args: { p_url: string }; Returns: boolean }
       is_username_available: { Args: { p_username: string }; Returns: boolean }
+      list_saved_opportunities: {
+        Args: never
+        Returns: {
+          deadline: string
+          is_expired: boolean
+          opportunity_id: string
+          saved_at: string
+          title: string
+        }[]
+      }
+      opportunity_is_public: {
+        Args: {
+          p_deadline: string
+          p_ends_at: string
+          p_status: Database["public"]["Enums"]["review_status"]
+        }
+        Returns: boolean
+      }
+      organisation_request_complete: {
+        Args: {
+          p_request: Database["public"]["Tables"]["organisations"]["Row"]
+        }
+        Returns: boolean
+      }
+      owns_approved_organisation: {
+        Args: { p_organisation_id: string }
+        Returns: boolean
+      }
+      review_organisation: {
+        Args: {
+          decision: Database["public"]["Enums"]["review_status"]
+          note?: string
+          org_id: string
+        }
+        Returns: {
+          organisation_id: string
+          status: Database["public"]["Enums"]["review_status"]
+        }[]
+      }
+      search_opportunities: {
+        Args: {
+          p_category_slugs?: string[]
+          p_city?: string
+          p_deadline_before?: string
+          p_free_only?: boolean
+          p_funded_only?: boolean
+          p_interest_slugs?: string[]
+          p_keyword?: string
+          p_limit?: number
+          p_mode?: Database["public"]["Enums"]["event_format"]
+          p_offset?: number
+          p_sort?: string
+          p_start_after?: string
+          p_verified_only?: boolean
+        }
+        Returns: {
+          category_slug: string
+          city: string
+          cost_or_funding: string
+          country: string
+          cover_url: string
+          created_at: string
+          deadline: string
+          description: string
+          eligibility: string
+          ends_at: string
+          format: Database["public"]["Enums"]["event_format"]
+          id: string
+          last_verified_at: string
+          location: string
+          organisation_id: string
+          organisation_name: string
+          source_url: string
+          starts_at: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          title: string
+          total_count: number
+          updated_at: string
+        }[]
+      }
+      submit_opportunity: {
+        Args: {
+          p_category_slug: string
+          p_city?: string
+          p_cost_or_funding: string
+          p_country?: string
+          p_cover_url?: string
+          p_deadline?: string
+          p_description: string
+          p_eligibility: string
+          p_ends_at?: string
+          p_interest_slugs: string[]
+          p_location: string
+          p_mode: Database["public"]["Enums"]["event_format"]
+          p_organisation_id?: string
+          p_organisation_name: string
+          p_source_url: string
+          p_starts_at?: string
+          p_title: string
+        }
+        Returns: {
+          opportunity_id: string
+          status: Database["public"]["Enums"]["review_status"]
+        }[]
+      }
     }
     Enums: {
       activity_status:
