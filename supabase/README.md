@@ -59,7 +59,7 @@ Any signed-in user can read `opportunity_categories`. Guests and signed-in users
 
 ### Optional local demo data
 
-After the normal local migration and seed replay, run this command with `psql` installed. The 12 fictional listings use stable IDs, and replaying the file refreshes their deadlines.
+After the normal local migration and seed replay, run this command with `psql` installed. The 15 fictional listings and three approved organisations use stable IDs, and replaying the file refreshes listing deadlines. The three fixture owners have fictional email addresses and no password or sign-in identity.
 
 ```powershell
 psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/demo_seed.sql
@@ -78,6 +78,37 @@ The recommendation function scores any interest overlap up to 35 points, categor
 For budget scoring, `Free` and `Fully funded` count as zero cost. The prototype also recognizes amounts in the form `PKR 1200`. The `low` tier uses a PKR maximum from the existing budget fields when available and defaults to PKR 2,500. Unknown cost earns points only with `any`.
 
 For eligibility, use `Open to all`, `Residents of <city>`, or `Ages <N>+` as the full eligibility field. City and age rules require the relevant profile data. Other eligibility text keeps the listing publicly browsable and excludes it from recommendations. The dashboard counts all of the caller's bookmarks and includes only approved future deadlines in the two deadline fields.
+
+## Phase 3 opportunity discovery and organisations
+
+See the [Phase 3 migration](migrations/20261120000300_opportunity_discovery.sql). Every spec listing field already existed. The migration adds a weighted, generated `search_document` and a GIN index. Publication requires `approved` with neither deadline nor event end already reached. A missing date imposes no expiry. Recommendations, dashboard deadlines, search, detail, and public row policies use the same rule. Guests can read the opportunity category catalog.
+
+### Submissions and organisation requests
+
+- Call `submit_opportunity` to create a pending community or official listing and all its tags atomically. Listing status, submitter, and verification date are assigned by the database. Required text must be non-blank. Category and tags must exist, URLs must be absolute HTTP(S), the deadline cannot be in the past, and the event end cannot precede its start.
+- Submitters can read their own pending and rejected listings and their tags, and update listing content on those rows. Submitter, organisation linkage, verification fields, status, and tags are controlled by the backend. Admins can read the queue. Phase 4 will handle listing approval.
+- Insert an organisation request into `organisations` with `name`, `organisation_type`, `website_url`, `official_email`, `representative_name`, `representative_title`, `representative_email`, and `evidence_notes`. `description` is optional. The signed-in requester becomes the owner and role recipient. Each owner can submit one request, read its status, and edit it while pending. Admins may read all requests and use the review RPC to approve or reject a pending request. Duplicate legacy requests for the same owner must be resolved before applying the unique constraint.
+- For an official submission pass `p_organisation_id`. The caller must own the approved organisation and hold the `organisation` role. The listing uses the approved organisation name and still starts pending. Owners can update their own official listing content and deadlines. Editing an approved official listing returns it to pending and clears its listing verification date. Organisation approval stays independent.
+
+### Phase 3 RPCs
+
+| RPC | Parameters | Returns |
+| --- | --- | --- |
+| `submit_opportunity` | Required `p_title`, `p_category_slug`, `p_organisation_name`, `p_description`, `p_source_url`, `p_eligibility`, `p_location`, `p_mode` (event format), `p_cost_or_funding`, `p_interest_slugs` (text array). Optional `p_deadline`, `p_starts_at`, `p_ends_at` (timestamp with time zone), `p_city`, `p_country`, `p_cover_url`, `p_organisation_id` (UUID). The approved organisation supplies the name for official submissions. | One row with `opportunity_id`, `status`. Signed-in members. |
+| `review_organisation` | `org_id` (UUID), `decision` (`approved` or `rejected`), optional `note`. | One row with `organisation_id`, `status`. Admin only. Approval grants the organisation role and both decisions write an audit entry. |
+| `search_opportunities` | Optional `p_keyword`, `p_category_slugs`, `p_interest_slugs`, `p_city`, `p_mode`, `p_deadline_before`, `p_start_after`, `p_free_only`, `p_funded_only`, `p_verified_only`, `p_sort`, `p_limit`, `p_offset`. | Public listing fields plus `total_count` on each returned row. Guests and signed-in users. |
+| `get_opportunity` | `p_id` (UUID). | Zero or one row with the public listing fields, `tags` (array of objects with `slug` and `name`), and `saved` (boolean for the caller). Guests and signed-in users. |
+| `list_saved_opportunities` | None. | `opportunity_id`, `title`, `deadline`, `saved_at`, `is_expired`. Returns the caller's approved saved listings, including expired ones. Signed-in users. |
+
+Both public listing RPCs return these columns: `id`, `organisation_id`, `submitted_by`, `category_slug`, `title`, `organisation_name`, `description`, `source_url`, `deadline`, `starts_at`, `ends_at`, `eligibility`, `location`, `city`, `country`, `format`, `cost_or_funding`, `cover_url`, `status`, `last_verified_at`, `created_at`, `updated_at`.
+
+Search uses English full-text ranking. A non-empty category or interest array matches any selected slug. City matches case-insensitively and mode matches the listing's exact format. Date filters are inclusive. `p_free_only` recognizes `Free`, `Fully funded`, and zero PKR. `p_funded_only` recognizes `Funded`, `Fully funded`, and `Partially funded`. `p_verified_only` requires a listing verification timestamp. Sort options are `relevance` (default), `newest`, `nearest_deadline`, and `upcoming_date`. The page size defaults to 20 and is clamped to 1–100. Offset defaults to zero. An empty page has no row carrying `total_count`.
+
+### Saves, reports, and cover images
+
+- Add a bookmark with `saved_opportunities(user_id, opportunity_id)` for an active public listing. Users can read and remove their own bookmarks, even after a listing expires. Use `list_saved_opportunities()` for saved listing titles and deadlines.
+- Insert an opportunity report with `reports(opportunity_id, reason, details)`. `details` is optional. The database assigns the reporter and open status. Reporters can read their own reports and admins can read all. Phase 8 will handle moderation.
+- Upload through the Storage API to `opportunity-covers/{user_id}/{unique_filename}`. The bucket accepts JPEG, PNG, WebP, and GIF up to 5 MiB. Use the public asset URL for `cover_url`. Owners can delete their own files through Storage and can replace a cover by uploading under a new name.
 
 ## Table reference
 
