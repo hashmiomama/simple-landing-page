@@ -59,7 +59,7 @@ Any signed-in user can read `opportunity_categories`. Guests and signed-in users
 
 ### Optional local demo data
 
-After the normal local migration and seed replay, run this command with `psql` installed. The 15 fictional published listings, three pending submissions, and three approved organisations use stable IDs. Replaying the file refreshes the published and still-pending fixture deadlines without resetting decisions on the three queue fixtures. The fixture owners have fictional email addresses and no password or sign-in identity.
+After the normal local migration and seed replay, run this command with `psql` installed. The seed uses stable IDs for the 15 published opportunity fixtures, three opportunity queue fixtures, three approved organisations, ten approved solo experiences, and two experience queue fixtures. Replaying it preserves moderation decisions on the queue fixtures. The fixture owners have fictional email addresses and no password or sign-in identity.
 
 ```powershell
 psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/demo_seed.sql
@@ -138,6 +138,33 @@ The `admin_*` RPCs check the caller's admin role. Paginated admin RPCs cap page 
 
 Rule-based reports inspect only stored data. Check values are `passed`, `failed`, or `needs manual verification`. Missing optional dates, unavailable organisation email data, source-page agreement, and organiser identity require manual verification. Duplicate detection compares case-insensitive trimmed titles or exact trimmed source URLs. Payment and urgency wording and free email domains are signals for human review. The report never fetches a source page or makes a decision automatically.
 
+## Phase 6 solo experiences
+
+Review the [Phase 6 migration](migrations/20261120000600_solo_experiences.sql). The existing `location` column is the location name. New content uses one of four category slugs: `art_and_culture`, `slow_experiences`, `learn_something_new`, or `outdoor_exploration`. The migration normalizes matching legacy labels. Older rows with unknown categories or incomplete content retain their data and need correction before a new approval.
+
+Members create pending experiences through `recommend_experience`, which saves the listing and interest tags atomically. Required content includes title, description, city, location name, category, valid coordinates, non-negative cost in PKR, positive duration in minutes, interaction level, safety and accessibility information, and at least one valid interest tag. Zero cost means free. Opening hours, cover URL, and source URL are optional. The supported interaction levels are `quiet`, `small_group`, and `social`.
+
+Guests can read approved experiences and their tags. Submitters can read and update the content of their own pending, rejected, and needs-info experiences. Use `set_experience_tags` to replace their tag selections. Owners cannot write status or submitter fields. Users can edit a needs-info entry in place and administrators can continue review from that queue. Rejection and requests for information require a note, which is stored in the admin audit log.
+
+### Phase 6 RPCs
+
+| RPC | Parameters | Returns |
+| --- | --- | --- |
+| `recommend_experience` | Required `p_title`, `p_description`, `p_category`, `p_city`, `p_location`, `p_latitude`, `p_longitude`, `p_cost`, `p_duration_minutes`, `p_social_level`, `p_safety_considerations`, `p_accessibility_information`, `p_interest_slugs`. Optional `p_opening_hours`, `p_cover_url`, `p_source_url`. | `experience_id`, `status` (`pending`). Signed-in members. |
+| `search_experiences` | Optional `p_keyword`, `p_category`, `p_city`, `p_max_cost`, `p_social_level`, `p_interest_slugs`, `p_limit`, `p_offset`. | Approved experience fields plus `total_count` on each result. Public. |
+| `get_experience` | `p_id` UUID. | Zero or one approved row with the experience fields and `tags` (array of `slug` and `name` objects). Public. |
+| `get_recommended_experiences` | Optional `p_limit`, default 10. | Experience fields plus `total_score`, `social_comfort_score`, `interest_score`, `budget_score`, `location_score`, `category_score`. Signed-in users. |
+| `set_experience_tags` | `p_id` UUID and nonempty `p_interest_slugs` text array. | `experience_id`, `interest_slugs`. Submitter only, while pending, rejected, or needs-info. |
+| `admin_list_experiences` | Optional `p_status` (defaults to `pending`, null for all active review statuses), `p_limit`, `p_offset`. | Experience fields plus `submitter_username`, `tags`, and `total_count`. Admin only. |
+| `admin_review_experience` | `p_id` UUID, `p_decision` (`approve`, `reject`, `request_info`), `p_note` (required for the last two). | `experience_id`, `status`. Admin only. Each decision writes a `review_experience` audit entry. |
+| `admin_dashboard_stats` | None. | `registered_users`, `published_opportunities`, `pending_submissions`, `pending_organisations`, `open_reports`, and `pending_experiences`. Admin only. |
+
+Experience fields are `id`, `submitted_by`, `title`, `description`, `category`, `city`, `location`, `source_url`, `cost`, `currency`, `duration_minutes`, `status`, `created_at`, `updated_at`, `latitude`, `longitude`, `opening_hours`, `social_level`, `safety_considerations`, `accessibility_information`, and `cover_url`.
+
+Search matches a case-insensitive literal keyword in the title, description, location, or city. City matches case-insensitively. A nonempty interest list matches any selected slug, and `p_max_cost` is inclusive in PKR. Search and admin list are newest first with stable ID tie-breaking. Page size defaults to 20 and is clamped to 1–100. Offset defaults to zero. Empty pages have no `total_count` row.
+
+Recommendations use 30 points each for social fit and interest overlap, 15 each for budget and city, and 10 for category. Missing social comfort or a missing legacy interaction level is neutral at 15 points. The owner-writable `user_preferences.experience_category_slugs` enum array records category preferences and defaults to empty. Budget reuses the Phase 2 preference, including the PKR 2,500 fallback for the low tier. An approved experience does not expire automatically because the model has no expiry field.
+
 ## Table reference
 
 | Table | Purpose |
@@ -157,6 +184,7 @@ Rule-based reports inspect only stored data. Check values are `passed`, `failed`
 | `applications` | Personal application tracking. |
 | `reminders` | Deadline and personal reminders. |
 | `solo_experiences` | Solo experience recommendations. |
+| `solo_experience_tags` | Links solo experiences to the shared interest catalog. |
 | `activities` | Proposed and scheduled group activities. |
 | `activity_participants` | Memberships and join decisions. |
 | `activity_messages` | Planning-room messages. |

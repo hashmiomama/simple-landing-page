@@ -153,4 +153,72 @@ where not exists (
 )
 on conflict (opportunity_id, interest_slug) do nothing;
 
+-- Fictional solo experiences. Coordinates are sample map pins for Karachi neighbourhoods.
+insert into public.solo_experiences (
+  id, submitted_by, title, description, category, city, location, latitude, longitude,
+  cost, currency, duration_minutes, opening_hours, social_level,
+  safety_considerations, accessibility_information, status
+)
+select
+  ('d6e00000-0000-4000-8000-' || lpad(demo.number::text, 12, '0'))::uuid,
+  case when demo.number > 10 then
+    ('d3e00000-0000-4000-9000-' || lpad((demo.number - 10)::text, 12, '0'))::uuid
+  end,
+  '[Demo] ' || demo.title, 'Fictional prototype listing. Venue, hours and prices are illustrative.',
+  demo.category, 'Karachi', demo.location, demo.latitude, demo.longitude, demo.cost, 'PKR',
+  demo.duration, demo.hours, demo.social::public.social_comfort,
+  case when demo.category = 'outdoor_exploration'
+    then 'Use marked public paths in daylight and check conditions before visiting.'
+    else 'Check the venue and any booking requirements before visiting.' end,
+  'Accessibility has not been verified. Check step-free access and facilities before visiting.',
+  case when demo.number > 10 then 'pending'::public.review_status else 'approved'::public.review_status end
+from (values
+  (1, 'Indigo Courtyard Gallery', 'art_and_culture', 'Clifton gallery district', 24.8167, 67.0354, 0, 50, 'Tue–Sun, 11:00–18:00', 'quiet'),
+  (2, 'Harbour Stories Museum', 'art_and_culture', 'Civil Lines district', 24.8526, 67.0267, 350, 75, 'Tue–Sun, 10:00–17:00', 'small_group'),
+  (3, 'Kite String Print Gallery', 'art_and_culture', 'Frere Hall area', 24.8476, 67.033, 200, 45, 'Wed–Sun, 12:00–18:00', 'quiet'),
+  (4, 'Paper Fig Bookshop', 'slow_experiences', 'Zamzama commercial area', 24.8154, 67.0478, 0, 40, 'Daily, 12:00–20:00', 'quiet'),
+  (5, 'Sea Oat Reading Café', 'slow_experiences', 'Boat Basin area', 24.8171, 67.0272, 650, 60, 'Daily, 10:00–20:00', 'quiet'),
+  (6, 'Clay Kettle Pottery Workshop', 'learn_something_new', 'DHA Phase 6', 24.792, 67.064, 1800, 90, 'Sat–Sun, by booking', 'small_group'),
+  (7, 'Mango Paper Sketch Workshop', 'learn_something_new', 'Bahadurabad area', 24.8811, 67.0664, 900, 75, 'Sat, 15:00–17:00', 'social'),
+  (8, 'Casuarina Park Walk', 'outdoor_exploration', 'Hill Park area', 24.8721, 67.0725, 0, 55, 'Daylight hours', 'quiet'),
+  (9, 'Silver Shell Beach Photo Walk', 'outdoor_exploration', 'Clifton shoreline', 24.7878, 67.043, 0, 45, 'Daylight hours', 'social'),
+  (10, 'Saltbush Garden Loop', 'outdoor_exploration', 'Bagh Ibn-e-Qasim area', 24.812, 67.028, 0, 35, 'Daylight hours', 'small_group'),
+  (11, 'Tin Sparrow Café Journaling', 'slow_experiences', 'PECHS neighbourhood', 24.8654, 67.0628, 500, 60, 'Daily, 11:00–19:00', 'quiet'),
+  (12, 'Blue Thread Watercolour Class', 'learn_something_new', 'Gulshan-e-Iqbal area', 24.918, 67.0924, 1100, 80, 'Sun, by booking', 'social')
+) as demo(number, title, category, location, latitude, longitude, cost, duration, hours, social)
+on conflict (id) do nothing;
+
+insert into public.solo_experience_tags (experience_id, interest_slug)
+select tag.experience_id::uuid, tag.interest_slug
+from (values
+  ('d6e00000-0000-4000-8000-000000000001', 'painting'),
+  ('d6e00000-0000-4000-8000-000000000001', 'design'),
+  ('d6e00000-0000-4000-8000-000000000002', 'research'),
+  ('d6e00000-0000-4000-8000-000000000002', 'photography'),
+  ('d6e00000-0000-4000-8000-000000000003', 'sketching'),
+  ('d6e00000-0000-4000-8000-000000000003', 'design'),
+  ('d6e00000-0000-4000-8000-000000000004', 'reading'),
+  ('d6e00000-0000-4000-8000-000000000004', 'writing'),
+  ('d6e00000-0000-4000-8000-000000000005', 'reading'),
+  ('d6e00000-0000-4000-8000-000000000005', 'writing'),
+  ('d6e00000-0000-4000-8000-000000000006', 'painting'),
+  ('d6e00000-0000-4000-8000-000000000006', 'design'),
+  ('d6e00000-0000-4000-8000-000000000007', 'sketching'),
+  ('d6e00000-0000-4000-8000-000000000007', 'design'),
+  ('d6e00000-0000-4000-8000-000000000008', 'hiking'),
+  ('d6e00000-0000-4000-8000-000000000008', 'photography'),
+  ('d6e00000-0000-4000-8000-000000000009', 'photography'),
+  ('d6e00000-0000-4000-8000-000000000009', 'hiking'),
+  ('d6e00000-0000-4000-8000-000000000010', 'gardening'),
+  ('d6e00000-0000-4000-8000-000000000010', 'hiking'),
+  ('d6e00000-0000-4000-8000-000000000011', 'writing'),
+  ('d6e00000-0000-4000-8000-000000000011', 'reading'),
+  ('d6e00000-0000-4000-8000-000000000012', 'painting'),
+  ('d6e00000-0000-4000-8000-000000000012', 'sketching')
+) as tag(experience_id, interest_slug)
+where not exists (
+  select 1 from public.solo_experience_tags as existing where existing.experience_id = tag.experience_id::uuid
+)
+on conflict (experience_id, interest_slug) do nothing;
+
 commit;
