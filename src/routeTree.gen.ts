@@ -26,6 +26,9 @@ import { Route as AuthenticatedCommunityRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedExperiencesRouteImport } from './routes/_authenticated/experiences'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/saved'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
@@ -116,6 +119,22 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPreferencesRoute =
+  AuthenticatedPreferencesRouteImport.update({
+    id: '/preferences',
+    path: '/preferences',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSavedRoute = AuthenticatedSavedRouteImport.update({
   id: '/saved',
   path: '/saved',
@@ -148,6 +167,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/experiences': typeof AuthenticatedExperiencesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/preferences': typeof AuthenticatedPreferencesRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
@@ -168,6 +190,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/experiences': typeof AuthenticatedExperiencesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/preferences': typeof AuthenticatedPreferencesRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
@@ -191,6 +216,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/experiences': typeof AuthenticatedExperiencesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/saved': typeof AuthenticatedSavedRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRoute
@@ -213,6 +241,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/experiences'
     | '/notifications'
+    | '/onboarding'
+    | '/preferences'
+    | '/profile'
     | '/saved'
     | '/settings'
     | '/admin'
@@ -233,6 +264,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/experiences'
     | '/notifications'
+    | '/onboarding'
+    | '/preferences'
+    | '/profile'
     | '/saved'
     | '/settings'
     | '/admin'
@@ -255,6 +289,9 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/experiences'
     | '/_authenticated/notifications'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/preferences'
+    | '/_authenticated/profile'
     | '/_authenticated/saved'
     | '/_authenticated/settings'
     | '/_authenticated/_admin/admin'
@@ -394,6 +431,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/preferences': {
+      id: '/_authenticated/preferences'
+      path: '/preferences'
+      fullPath: '/preferences'
+      preLoaderRoute: typeof AuthenticatedPreferencesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/saved': {
       id: '/_authenticated/saved'
       path: '/saved'
@@ -440,6 +498,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExperiencesRoute: typeof AuthenticatedExperiencesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSavedRoute: typeof AuthenticatedSavedRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
@@ -452,6 +513,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExperiencesRoute: AuthenticatedExperiencesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSavedRoute: AuthenticatedSavedRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }

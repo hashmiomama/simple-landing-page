@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Settings, Shield } from "lucide-react";
+import { ChevronDown, LogOut, Settings, Shield, UserRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -69,7 +69,7 @@ function AccountArea() {
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="soft" size="sm" aria-label={`Account menu for ${name}`}>
+          <Button variant="soft" size="sm" aria-label={`Profile menu for ${name}`}>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground" aria-hidden>
               {name.charAt(0).toUpperCase()}
             </span>
@@ -86,6 +86,16 @@ function AccountArea() {
           <DropdownMenuItem asChild>
             <Link to="/dashboard" className="sm:hidden">
               Home
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/profile">
+              <UserRound className="h-4 w-4" aria-hidden /> My profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/profile" hash="preferences">
+              <Settings className="h-4 w-4" aria-hidden /> Preferences
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

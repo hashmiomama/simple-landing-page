@@ -14,4 +14,12 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it.each(["/onboarding", "/preferences", "/dashboard", "/profile"])("requires authentication for %s", (path) => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    const routeIds = router.matchRoutes(path).map(({ routeId }) => routeId);
+
+    expect(routeIds).toContain("/_authenticated");
+    expect(routeIds.at(-1)).toBe(`/_authenticated${path}`);
+  });
 });
