@@ -703,6 +703,59 @@ export type Database = {
           },
         ]
       }
+      point_rules: {
+        Row: {
+          points: number
+          reason: string
+        }
+        Insert: {
+          points: number
+          reason: string
+        }
+        Update: {
+          points?: number
+          reason?: string
+        }
+        Relationships: []
+      }
+      point_transactions: {
+        Row: {
+          created_at: string
+          id: string
+          points: number
+          reason: string
+          source_id: string
+          source_table: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points: number
+          reason: string
+          source_id: string
+          source_table: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points?: number
+          reason?: string
+          source_id?: string
+          source_table?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "point_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       poll_options: {
         Row: {
           created_at: string
@@ -1490,6 +1543,15 @@ export type Database = {
         }[]
       }
       admin_verification_report: { Args: { p_id: string }; Returns: Json }
+      award_points: {
+        Args: {
+          p_reason: string
+          p_source_id: string
+          p_source_table: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       bootstrap_account: { Args: { account_id: string }; Returns: undefined }
       create_notification: {
         Args: {
@@ -1597,6 +1659,17 @@ export type Database = {
           frequency: Database["public"]["Enums"]["notification_frequency"]
         }[]
       }
+      get_my_points: {
+        Args: never
+        Returns: {
+          approved_experiences: number
+          approved_opportunities: number
+          level_name: string
+          next_level_name: string
+          points_to_next_level: number
+          total_points: number
+        }[]
+      }
       get_opportunity: {
         Args: { p_id: string }
         Returns: {
@@ -1627,6 +1700,15 @@ export type Database = {
         }[]
       }
       get_opportunity_status: { Args: { p_id: string }; Returns: string }
+      get_points_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_url: string
+          level_name: string
+          total_points: number
+          username: string
+        }[]
+      }
       get_recommended_experiences: {
         Args: { p_limit?: number }
         Returns: {
@@ -1699,6 +1781,7 @@ export type Database = {
       }
       is_http_url: { Args: { p_url: string }; Returns: boolean }
       is_username_available: { Args: { p_username: string }; Returns: boolean }
+      level_for_points: { Args: { p_total: number }; Returns: string }
       list_my_applications: {
         Args: { p_status?: Database["public"]["Enums"]["application_status"] }
         Returns: {
@@ -1723,6 +1806,19 @@ export type Database = {
           notifications: Json
           total_count: number
           unread_count: number
+        }[]
+      }
+      list_my_point_history: {
+        Args: { p_limit?: number; p_offset?: number }
+        Returns: {
+          created_at: string
+          id: string
+          points: number
+          reason: string
+          source_id: string
+          source_table: string
+          source_title: string
+          total_count: number
         }[]
       }
       list_my_reminders: {
@@ -1850,6 +1946,15 @@ export type Database = {
           organisation_id: string
           status: Database["public"]["Enums"]["review_status"]
         }[]
+      }
+      revoke_contribution_points: {
+        Args: {
+          p_reason: string
+          p_source_id: string
+          p_source_table: string
+          p_user_id: string
+        }
+        Returns: undefined
       }
       search_experiences: {
         Args: {
