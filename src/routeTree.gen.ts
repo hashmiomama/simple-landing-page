@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as ExperiencesRouteImport } from './routes/experiences'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
@@ -24,23 +25,27 @@ import { Route as AuthenticatedApplicationsRouteImport } from './routes/_authent
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedCommunityRouteImport } from './routes/_authenticated/community'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedExperiencesRouteImport } from './routes/_authenticated/experiences'
+import { Route as AuthenticatedMyExperienceRecommendationsRouteImport } from './routes/_authenticated/my-experience-recommendations'
 import { Route as AuthenticatedMySubmissionsRouteImport } from './routes/_authenticated/my-submissions'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedPreferencesRouteImport } from './routes/_authenticated/preferences'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedRecommendExperienceRouteImport } from './routes/_authenticated/recommend-experience'
 import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/saved'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSubmitOpportunityRouteImport } from './routes/_authenticated/submit-opportunity'
+import { Route as ExperiencesIdRouteImport } from './routes/experiences_.$id'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities_.$id'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
+import { Route as AuthenticatedMyExperienceRecommendationsIdRouteImport } from './routes/_authenticated/my-experience-recommendations_.$id'
 import { Route as AuthenticatedMySubmissionsIdRouteImport } from './routes/_authenticated/my-submissions_.$id'
 import { Route as AuthenticatedOrganisationListingsRouteImport } from './routes/_authenticated/organisation.listings'
 import { Route as AuthenticatedOrganisationRegisterRouteImport } from './routes/_authenticated/organisation.register'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminSplatRouteImport } from './routes/_authenticated/_admin/admin.$'
 import { Route as AuthenticatedAdminAdminAuditLogRouteImport } from './routes/_authenticated/_admin/admin.audit-log'
+import { Route as AuthenticatedAdminAdminExperiencesRouteImport } from './routes/_authenticated/_admin/admin.experiences'
 import { Route as AuthenticatedAdminAdminOpportunitiesRouteImport } from './routes/_authenticated/_admin/admin.opportunities'
 import { Route as AuthenticatedAdminAdminOrganisationsRouteImport } from './routes/_authenticated/_admin/admin.organisations'
 import { Route as AuthenticatedAdminAdminOpportunitiesIdRouteImport } from './routes/_authenticated/_admin/admin.opportunities_.$id'
@@ -52,6 +57,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExperiencesRoute = ExperiencesRouteImport.update({
+  id: '/experiences',
+  path: '/experiences',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForbiddenRoute = ForbiddenRouteImport.update({
@@ -119,10 +129,10 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedExperiencesRoute =
-  AuthenticatedExperiencesRouteImport.update({
-    id: '/experiences',
-    path: '/experiences',
+const AuthenticatedMyExperienceRecommendationsRoute =
+  AuthenticatedMyExperienceRecommendationsRouteImport.update({
+    id: '/my-experience-recommendations',
+    path: '/my-experience-recommendations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedMySubmissionsRoute =
@@ -153,6 +163,12 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRecommendExperienceRoute =
+  AuthenticatedRecommendExperienceRouteImport.update({
+    id: '/recommend-experience',
+    path: '/recommend-experience',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSavedRoute = AuthenticatedSavedRouteImport.update({
   id: '/saved',
   path: '/saved',
@@ -169,6 +185,11 @@ const AuthenticatedSubmitOpportunityRoute =
     path: '/submit-opportunity',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ExperiencesIdRoute = ExperiencesIdRouteImport.update({
+  id: '/experiences_/$id',
+  path: '/experiences/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
   id: '/opportunities_/$id',
   path: '/opportunities/$id',
@@ -179,6 +200,12 @@ const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedMyExperienceRecommendationsIdRoute =
+  AuthenticatedMyExperienceRecommendationsIdRouteImport.update({
+    id: '/my-experience-recommendations_/$id',
+    path: '/my-experience-recommendations/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMySubmissionsIdRoute =
   AuthenticatedMySubmissionsIdRouteImport.update({
     id: '/my-submissions_/$id',
@@ -215,6 +242,12 @@ const AuthenticatedAdminAdminAuditLogRoute =
     path: '/audit-log',
     getParentRoute: () => AuthenticatedAdminAdminRoute,
   } as any)
+const AuthenticatedAdminAdminExperiencesRoute =
+  AuthenticatedAdminAdminExperiencesRouteImport.update({
+    id: '/experiences',
+    path: '/experiences',
+    getParentRoute: () => AuthenticatedAdminAdminRoute,
+  } as any)
 const AuthenticatedAdminAdminOpportunitiesRoute =
   AuthenticatedAdminAdminOpportunitiesRouteImport.update({
     id: '/opportunities',
@@ -236,6 +269,7 @@ const AuthenticatedAdminAdminOpportunitiesIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/experiences': typeof ExperiencesRoute
   '/forbidden': typeof ForbiddenRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -248,22 +282,26 @@ export interface FileRoutesByFullPath {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/experiences': typeof AuthenticatedExperiencesRoute
+  '/my-experience-recommendations': typeof AuthenticatedMyExperienceRecommendationsRoute
   '/my-submissions': typeof AuthenticatedMySubmissionsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/recommend-experience': typeof AuthenticatedRecommendExperienceRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/experiences/$id': typeof ExperiencesIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/admin': typeof AuthenticatedAdminAdminRouteWithChildren
+  '/my-experience-recommendations/$id': typeof AuthenticatedMyExperienceRecommendationsIdRoute
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
   '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
   '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
+  '/admin/experiences': typeof AuthenticatedAdminAdminExperiencesRoute
   '/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
   '/admin/organisations': typeof AuthenticatedAdminAdminOrganisationsRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
@@ -271,6 +309,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/experiences': typeof ExperiencesRoute
   '/forbidden': typeof ForbiddenRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -283,21 +322,25 @@ export interface FileRoutesByTo {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/community': typeof AuthenticatedCommunityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/experiences': typeof AuthenticatedExperiencesRoute
+  '/my-experience-recommendations': typeof AuthenticatedMyExperienceRecommendationsRoute
   '/my-submissions': typeof AuthenticatedMySubmissionsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/preferences': typeof AuthenticatedPreferencesRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/recommend-experience': typeof AuthenticatedRecommendExperienceRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/experiences/$id': typeof ExperiencesIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/my-experience-recommendations/$id': typeof AuthenticatedMyExperienceRecommendationsIdRoute
   '/my-submissions/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
   '/admin/$': typeof AuthenticatedAdminAdminSplatRoute
   '/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
+  '/admin/experiences': typeof AuthenticatedAdminAdminExperiencesRoute
   '/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
   '/admin/organisations': typeof AuthenticatedAdminAdminOrganisationsRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
@@ -307,6 +350,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/experiences': typeof ExperiencesRoute
   '/forbidden': typeof ForbiddenRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -320,22 +364,26 @@ export interface FileRoutesById {
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/community': typeof AuthenticatedCommunityRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/experiences': typeof AuthenticatedExperiencesRoute
+  '/_authenticated/my-experience-recommendations': typeof AuthenticatedMyExperienceRecommendationsRoute
   '/_authenticated/my-submissions': typeof AuthenticatedMySubmissionsRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/preferences': typeof AuthenticatedPreferencesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/recommend-experience': typeof AuthenticatedRecommendExperienceRoute
   '/_authenticated/saved': typeof AuthenticatedSavedRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/submit-opportunity': typeof AuthenticatedSubmitOpportunityRoute
+  '/experiences_/$id': typeof ExperiencesIdRoute
   '/opportunities_/$id': typeof OpportunitiesIdRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRouteWithChildren
+  '/_authenticated/my-experience-recommendations_/$id': typeof AuthenticatedMyExperienceRecommendationsIdRoute
   '/_authenticated/my-submissions_/$id': typeof AuthenticatedMySubmissionsIdRoute
   '/_authenticated/organisation/listings': typeof AuthenticatedOrganisationListingsRoute
   '/_authenticated/organisation/register': typeof AuthenticatedOrganisationRegisterRoute
   '/_authenticated/_admin/admin/$': typeof AuthenticatedAdminAdminSplatRoute
   '/_authenticated/_admin/admin/audit-log': typeof AuthenticatedAdminAdminAuditLogRoute
+  '/_authenticated/_admin/admin/experiences': typeof AuthenticatedAdminAdminExperiencesRoute
   '/_authenticated/_admin/admin/opportunities': typeof AuthenticatedAdminAdminOpportunitiesRoute
   '/_authenticated/_admin/admin/organisations': typeof AuthenticatedAdminAdminOrganisationsRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
@@ -345,6 +393,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/experiences'
     | '/forbidden'
     | '/forgot-password'
     | '/login'
@@ -357,22 +406,26 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/community'
     | '/dashboard'
-    | '/experiences'
+    | '/my-experience-recommendations'
     | '/my-submissions'
     | '/notifications'
     | '/onboarding'
     | '/preferences'
     | '/profile'
+    | '/recommend-experience'
     | '/saved'
     | '/settings'
     | '/submit-opportunity'
+    | '/experiences/$id'
     | '/opportunities/$id'
     | '/admin'
+    | '/my-experience-recommendations/$id'
     | '/my-submissions/$id'
     | '/organisation/listings'
     | '/organisation/register'
     | '/admin/$'
     | '/admin/audit-log'
+    | '/admin/experiences'
     | '/admin/opportunities'
     | '/admin/organisations'
     | '/admin/'
@@ -380,6 +433,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/experiences'
     | '/forbidden'
     | '/forgot-password'
     | '/login'
@@ -392,21 +446,25 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/community'
     | '/dashboard'
-    | '/experiences'
+    | '/my-experience-recommendations'
     | '/my-submissions'
     | '/notifications'
     | '/onboarding'
     | '/preferences'
     | '/profile'
+    | '/recommend-experience'
     | '/saved'
     | '/settings'
     | '/submit-opportunity'
+    | '/experiences/$id'
     | '/opportunities/$id'
+    | '/my-experience-recommendations/$id'
     | '/my-submissions/$id'
     | '/organisation/listings'
     | '/organisation/register'
     | '/admin/$'
     | '/admin/audit-log'
+    | '/admin/experiences'
     | '/admin/opportunities'
     | '/admin/organisations'
     | '/admin'
@@ -415,6 +473,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/experiences'
     | '/forbidden'
     | '/forgot-password'
     | '/login'
@@ -428,22 +487,26 @@ export interface FileRouteTypes {
     | '/_authenticated/calendar'
     | '/_authenticated/community'
     | '/_authenticated/dashboard'
-    | '/_authenticated/experiences'
+    | '/_authenticated/my-experience-recommendations'
     | '/_authenticated/my-submissions'
     | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
     | '/_authenticated/preferences'
     | '/_authenticated/profile'
+    | '/_authenticated/recommend-experience'
     | '/_authenticated/saved'
     | '/_authenticated/settings'
     | '/_authenticated/submit-opportunity'
+    | '/experiences_/$id'
     | '/opportunities_/$id'
     | '/_authenticated/_admin/admin'
+    | '/_authenticated/my-experience-recommendations_/$id'
     | '/_authenticated/my-submissions_/$id'
     | '/_authenticated/organisation/listings'
     | '/_authenticated/organisation/register'
     | '/_authenticated/_admin/admin/$'
     | '/_authenticated/_admin/admin/audit-log'
+    | '/_authenticated/_admin/admin/experiences'
     | '/_authenticated/_admin/admin/opportunities'
     | '/_authenticated/_admin/admin/organisations'
     | '/_authenticated/_admin/admin/'
@@ -453,6 +516,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ExperiencesRoute: typeof ExperiencesRoute
   ForbiddenRoute: typeof ForbiddenRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
@@ -461,6 +525,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  ExperiencesIdRoute: typeof ExperiencesIdRoute
   OpportunitiesIdRoute: typeof OpportunitiesIdRoute
 }
 
@@ -478,6 +543,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/experiences': {
+      id: '/experiences'
+      path: '/experiences'
+      fullPath: '/experiences'
+      preLoaderRoute: typeof ExperiencesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forbidden': {
@@ -571,11 +643,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/experiences': {
-      id: '/_authenticated/experiences'
-      path: '/experiences'
-      fullPath: '/experiences'
-      preLoaderRoute: typeof AuthenticatedExperiencesRouteImport
+    '/_authenticated/my-experience-recommendations': {
+      id: '/_authenticated/my-experience-recommendations'
+      path: '/my-experience-recommendations'
+      fullPath: '/my-experience-recommendations'
+      preLoaderRoute: typeof AuthenticatedMyExperienceRecommendationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/my-submissions': {
@@ -613,6 +685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/recommend-experience': {
+      id: '/_authenticated/recommend-experience'
+      path: '/recommend-experience'
+      fullPath: '/recommend-experience'
+      preLoaderRoute: typeof AuthenticatedRecommendExperienceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/saved': {
       id: '/_authenticated/saved'
       path: '/saved'
@@ -634,6 +713,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSubmitOpportunityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/experiences_/$id': {
+      id: '/experiences_/$id'
+      path: '/experiences/$id'
+      fullPath: '/experiences/$id'
+      preLoaderRoute: typeof ExperiencesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/opportunities_/$id': {
       id: '/opportunities_/$id'
       path: '/opportunities/$id'
@@ -647,6 +733,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminAdminRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/my-experience-recommendations_/$id': {
+      id: '/_authenticated/my-experience-recommendations_/$id'
+      path: '/my-experience-recommendations/$id'
+      fullPath: '/my-experience-recommendations/$id'
+      preLoaderRoute: typeof AuthenticatedMyExperienceRecommendationsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/my-submissions_/$id': {
       id: '/_authenticated/my-submissions_/$id'
@@ -690,6 +783,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminAuditLogRouteImport
       parentRoute: typeof AuthenticatedAdminAdminRoute
     }
+    '/_authenticated/_admin/admin/experiences': {
+      id: '/_authenticated/_admin/admin/experiences'
+      path: '/experiences'
+      fullPath: '/admin/experiences'
+      preLoaderRoute: typeof AuthenticatedAdminAdminExperiencesRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminRoute
+    }
     '/_authenticated/_admin/admin/opportunities': {
       id: '/_authenticated/_admin/admin/opportunities'
       path: '/opportunities'
@@ -717,6 +817,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminAdminRouteChildren {
   AuthenticatedAdminAdminSplatRoute: typeof AuthenticatedAdminAdminSplatRoute
   AuthenticatedAdminAdminAuditLogRoute: typeof AuthenticatedAdminAdminAuditLogRoute
+  AuthenticatedAdminAdminExperiencesRoute: typeof AuthenticatedAdminAdminExperiencesRoute
   AuthenticatedAdminAdminOpportunitiesRoute: typeof AuthenticatedAdminAdminOpportunitiesRoute
   AuthenticatedAdminAdminOrganisationsRoute: typeof AuthenticatedAdminAdminOrganisationsRoute
   AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
@@ -727,6 +828,8 @@ const AuthenticatedAdminAdminRouteChildren: AuthenticatedAdminAdminRouteChildren
   {
     AuthenticatedAdminAdminSplatRoute: AuthenticatedAdminAdminSplatRoute,
     AuthenticatedAdminAdminAuditLogRoute: AuthenticatedAdminAdminAuditLogRoute,
+    AuthenticatedAdminAdminExperiencesRoute:
+      AuthenticatedAdminAdminExperiencesRoute,
     AuthenticatedAdminAdminOpportunitiesRoute:
       AuthenticatedAdminAdminOpportunitiesRoute,
     AuthenticatedAdminAdminOrganisationsRoute:
@@ -761,15 +864,17 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedCommunityRoute: typeof AuthenticatedCommunityRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedExperiencesRoute: typeof AuthenticatedExperiencesRoute
+  AuthenticatedMyExperienceRecommendationsRoute: typeof AuthenticatedMyExperienceRecommendationsRoute
   AuthenticatedMySubmissionsRoute: typeof AuthenticatedMySubmissionsRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPreferencesRoute: typeof AuthenticatedPreferencesRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedRecommendExperienceRoute: typeof AuthenticatedRecommendExperienceRoute
   AuthenticatedSavedRoute: typeof AuthenticatedSavedRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSubmitOpportunityRoute: typeof AuthenticatedSubmitOpportunityRoute
+  AuthenticatedMyExperienceRecommendationsIdRoute: typeof AuthenticatedMyExperienceRecommendationsIdRoute
   AuthenticatedMySubmissionsIdRoute: typeof AuthenticatedMySubmissionsIdRoute
   AuthenticatedOrganisationListingsRoute: typeof AuthenticatedOrganisationListingsRoute
   AuthenticatedOrganisationRegisterRoute: typeof AuthenticatedOrganisationRegisterRoute
@@ -781,15 +886,19 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedCommunityRoute: AuthenticatedCommunityRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedExperiencesRoute: AuthenticatedExperiencesRoute,
+  AuthenticatedMyExperienceRecommendationsRoute:
+    AuthenticatedMyExperienceRecommendationsRoute,
   AuthenticatedMySubmissionsRoute: AuthenticatedMySubmissionsRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPreferencesRoute: AuthenticatedPreferencesRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedRecommendExperienceRoute: AuthenticatedRecommendExperienceRoute,
   AuthenticatedSavedRoute: AuthenticatedSavedRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSubmitOpportunityRoute: AuthenticatedSubmitOpportunityRoute,
+  AuthenticatedMyExperienceRecommendationsIdRoute:
+    AuthenticatedMyExperienceRecommendationsIdRoute,
   AuthenticatedMySubmissionsIdRoute: AuthenticatedMySubmissionsIdRoute,
   AuthenticatedOrganisationListingsRoute:
     AuthenticatedOrganisationListingsRoute,
@@ -803,6 +912,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ExperiencesRoute: ExperiencesRoute,
   ForbiddenRoute: ForbiddenRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
@@ -811,6 +921,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  ExperiencesIdRoute: ExperiencesIdRoute,
   OpportunitiesIdRoute: OpportunitiesIdRoute,
 }
 export const routeTree = rootRouteImport

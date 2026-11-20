@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { statusLabels } from "@/features/opportunities/data";
 import type { Enums } from "@/integrations/supabase/types";
 
-import { pageSize } from "./data";
+import { pageSize as adminPageSize } from "./data";
 
 export function StatusFilters<T extends Enums<"review_status">>({
   statuses,
@@ -45,10 +45,12 @@ export function StatusFilters<T extends Enums<"review_status">>({
 export function Pagination({
   page,
   count,
+  pageSize = adminPageSize,
   change,
 }: {
   page: number;
   count: number;
+  pageSize?: number;
   change: (value: number) => void;
 }) {
   if (page === 1 && count <= pageSize) return null;

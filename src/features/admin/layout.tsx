@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { ClipboardCheck, FileText, LayoutDashboard, Building2 } from "lucide-react";
+import { ClipboardCheck, FileText, LayoutDashboard, Building2, Mountain } from "lucide-react";
 import type { ReactNode } from "react";
 
 export const modules = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/opportunities", label: "Opportunity verification", icon: ClipboardCheck },
+  { to: "/admin/experiences", label: "Experience verification", icon: Mountain },
   { to: "/admin/organisations", label: "Organisation verification", icon: Building2 },
   { to: "/admin/audit-log", label: "Audit log", icon: FileText },
 ] as const;

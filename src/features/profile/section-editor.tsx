@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { recommendations } from "@/features/dashboard/data";
+import { experienceRecommendations } from "@/features/experiences/data";
 
 export type SectionAccess = {
   userId: string;
@@ -23,7 +24,10 @@ export function useSectionEditor<T>(
   const mutation = useMutation({
     mutationFn: async ({ draft, initial }: { draft: T; initial: T }) => {
       await persist(draft, initial);
-      await queryClient.invalidateQueries({ queryKey: recommendations(userId).queryKey });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: recommendations(userId).queryKey }),
+        queryClient.invalidateQueries({ queryKey: experienceRecommendations(userId).queryKey }),
+      ]);
     },
     onSuccess: () => {
       setEdit(null);

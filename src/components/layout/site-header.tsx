@@ -34,13 +34,20 @@ export function SiteHeader() {
             .
           </span>
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-1 sm:gap-2">
+        <nav aria-label="Main" className="flex flex-wrap items-center gap-1 sm:gap-2">
           <Link
             to="/opportunities"
             className="inline-flex rounded-full px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:px-4"
             activeProps={{ className: "text-foreground" }}
           >
             Opportunities
+          </Link>
+          <Link
+            to="/experiences"
+            className="inline-flex rounded-full px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:px-4"
+            activeProps={{ className: "text-foreground" }}
+          >
+            Experiences
           </Link>
           <AccountArea />
         </nav>
@@ -91,13 +98,16 @@ function AccountArea() {
             <Link to="/submit-opportunity">Submit an opportunity</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/experiences">Recommend an experience</Link>
+            <Link to="/recommend-experience">Recommend an experience</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/community">Propose an activity</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/my-submissions">My submissions</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/my-experience-recommendations">My experience recommendations</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

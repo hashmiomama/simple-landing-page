@@ -26,6 +26,7 @@ export function AdminDashboard() {
     ["registered_users", "Registered users"],
     ["published_opportunities", "Published opportunities"],
     ["pending_submissions", "Pending submissions"],
+    ["pending_experiences", "Pending experiences"],
     ["pending_organisations", "Pending organisations"],
     ["open_reports", "Open reports"],
   ] as const;

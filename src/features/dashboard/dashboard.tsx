@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bookmark, CalendarDays, Compass, Leaf, Search } from "lucide-react";
+import { Bookmark, CalendarDays, Compass, Search } from "lucide-react";
 import { toast } from "sonner";
 
 import { EmptyState, ErrorState } from "@/components/layout/page-states";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/features/auth/auth-provider";
+import { DashboardExperiences } from "@/features/experiences/dashboard-experiences";
 import { opportunityCategories } from "@/features/onboarding/data";
 import { ProfileCompletionCard } from "@/features/profile/profile-completion-card";
 
@@ -253,16 +254,7 @@ function DashboardContent({
         )}
       </section>
 
-      <section aria-labelledby="experiences-heading">
-        <h2 id="experiences-heading" className="mb-4 text-2xl font-bold">
-          Experiences you might enjoy
-        </h2>
-        <EmptyState
-          icon={Leaf}
-          title="Coming soon"
-          description="Ideas for things to try at your own pace will appear here."
-        />
-      </section>
+      <DashboardExperiences userId={userId} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { categories as experienceCategories } from "@/features/experiences/data";
 import { Chips } from "@/features/onboarding/choices";
 import {
   interestCatalog,
@@ -31,6 +32,7 @@ const selectClass =
 type PreferenceDraft = {
   interests: string[];
   categories: string[];
+  experienceCategories: Enums<"experience_category">[];
   city: string;
   wantsOnline: boolean;
   budget: Enums<"budget_preference">;
@@ -54,6 +56,8 @@ export function PreferencesSection(access: SectionAccess) {
     const patch: TablesUpdate<"user_preferences"> = {};
     if (!equalSelections(draft.categories, initial.categories))
       patch.opportunity_category_slugs = draft.categories;
+    if (!equalSelections(draft.experienceCategories, initial.experienceCategories))
+      patch.experience_category_slugs = draft.experienceCategories;
     if (draft.city !== initial.city) patch.city = optionalText(draft.city);
     if (draft.wantsOnline !== initial.wantsOnline) patch.wants_online = draft.wantsOnline;
     if (draft.budget !== initial.budget) patch.budget_preference = draft.budget;
@@ -85,6 +89,7 @@ export function PreferencesSection(access: SectionAccess) {
           categories: prefs.data.opportunity_category_slugs.filter((slug) =>
             categories.data.some((item) => item.slug === slug),
           ),
+          experienceCategories: prefs.data.experience_category_slugs ?? [],
           city: prefs.data.city ?? "",
           wantsOnline: prefs.data.wants_online,
           budget: prefs.data.budget_preference,
@@ -146,6 +151,21 @@ export function PreferencesSection(access: SectionAccess) {
             ) : (
               <p className="text-sm text-muted-foreground">No categories are available yet.</p>
             )}
+          </fieldset>
+          <fieldset>
+            <legend className="mb-2 text-sm font-medium">Experience categories</legend>
+            <Chips
+              options={[...experienceCategories]}
+              selected={draft.experienceCategories}
+              onChange={(values) =>
+                editor.setDraft({
+                  ...draft,
+                  experienceCategories: experienceCategories
+                    .filter(({ slug }) => values.includes(slug))
+                    .map(({ slug }) => slug),
+                })
+              }
+            />
           </fieldset>
           <div>
             <label htmlFor="profile-city" className="mb-1.5 block text-sm font-medium">
@@ -225,6 +245,10 @@ export function PreferencesSection(access: SectionAccess) {
             value={displayNames(current.categories, categories.data ?? [])}
           />
           <ProfileValue label="City" value={current.city} />
+          <ProfileValue
+            label="Experience categories"
+            value={displayNames(current.experienceCategories, [...experienceCategories])}
+          />
           <ProfileValue
             label="Online opportunities"
             value={current.wantsOnline ? "Included" : "Not preferred"}
