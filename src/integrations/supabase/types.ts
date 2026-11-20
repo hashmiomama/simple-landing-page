@@ -1225,7 +1225,9 @@ export type Database = {
       verification_reviews: {
         Row: {
           created_at: string
+          decision: string | null
           id: string
+          note: string | null
           opportunity_id: string
           report: Json
           reviewer_id: string | null
@@ -1235,7 +1237,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          decision?: string | null
           id?: string
+          note?: string | null
           opportunity_id: string
           report?: Json
           reviewer_id?: string | null
@@ -1245,7 +1249,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          decision?: string | null
           id?: string
+          note?: string | null
           opportunity_id?: string
           report?: Json
           reviewer_id?: string | null
@@ -1275,6 +1281,90 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_dashboard_stats: {
+        Args: never
+        Returns: {
+          open_reports: number
+          pending_organisations: number
+          pending_submissions: number
+          published_opportunities: number
+          registered_users: number
+        }[]
+      }
+      admin_get_submission: {
+        Args: { p_id: string }
+        Returns: {
+          listing: Json
+          reviews: Json
+          submitter_username: string
+          tags: Json
+        }[]
+      }
+      admin_list_audit_logs: {
+        Args: { p_limit?: number; p_offset?: number }
+        Returns: {
+          action: string
+          actor_id: string
+          actor_username: string
+          created_at: string
+          details: Json
+          id: string
+          target_id: string
+          target_table: string
+          total_count: number
+        }[]
+      }
+      admin_list_organisations: {
+        Args: { p_status?: string }
+        Returns: {
+          created_at: string
+          description: string | null
+          evidence_notes: string | null
+          id: string
+          name: string
+          official_email: string | null
+          organisation_type: string | null
+          owner_id: string
+          representative_email: string | null
+          representative_name: string | null
+          representative_title: string | null
+          status: Database["public"]["Enums"]["review_status"]
+          updated_at: string
+          website_url: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "organisations"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_list_submissions: {
+        Args: { p_limit?: number; p_offset?: number; p_status?: string }
+        Returns: {
+          category_slug: string
+          created_at: string
+          deadline: string
+          id: string
+          last_verified_at: string
+          organisation_name: string
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_by: string
+          submitter_username: string
+          title: string
+          total_count: number
+        }[]
+      }
+      admin_review_opportunity: {
+        Args: { p_decision: string; p_id: string; p_note?: string }
+        Returns: {
+          last_verified_at: string
+          opportunity_id: string
+          review_id: string
+          status: Database["public"]["Enums"]["review_status"]
+        }[]
+      }
+      admin_verification_report: { Args: { p_id: string }; Returns: Json }
       bootstrap_account: { Args: { account_id: string }; Returns: undefined }
       get_dashboard_summary: {
         Args: never
@@ -1313,6 +1403,7 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_opportunity_status: { Args: { p_id: string }; Returns: string }
       get_recommended_opportunities: {
         Args: { p_limit?: number }
         Returns: {
@@ -1353,6 +1444,14 @@ export type Database = {
       }
       is_http_url: { Args: { p_url: string }; Returns: boolean }
       is_username_available: { Args: { p_username: string }; Returns: boolean }
+      list_opportunity_review_notes: {
+        Args: { p_id: string }
+        Returns: {
+          created_at: string
+          decision: string
+          note: string
+        }[]
+      }
       list_saved_opportunities: {
         Args: never
         Returns: {
@@ -1371,6 +1470,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      opportunity_missing_fields: {
+        Args: {
+          p_listing: Database["public"]["Tables"]["opportunities"]["Row"]
+        }
+        Returns: string[]
+      }
       organisation_request_complete: {
         Args: {
           p_request: Database["public"]["Tables"]["organisations"]["Row"]
@@ -1380,6 +1485,13 @@ export type Database = {
       owns_approved_organisation: {
         Args: { p_organisation_id: string }
         Returns: boolean
+      }
+      resubmit_opportunity: {
+        Args: { p_id: string }
+        Returns: {
+          opportunity_id: string
+          status: Database["public"]["Enums"]["review_status"]
+        }[]
       }
       review_organisation: {
         Args: {
@@ -1434,6 +1546,13 @@ export type Database = {
           updated_at: string
         }[]
       }
+      set_opportunity_tags: {
+        Args: { p_id: string; p_interest_slugs: string[] }
+        Returns: {
+          interest_slugs: string[]
+          opportunity_id: string
+        }[]
+      }
       submit_opportunity: {
         Args: {
           p_category_slug: string
@@ -1483,7 +1602,12 @@ export type Database = {
       identity_status: "pending" | "verified" | "rejected" | "expired"
       participant_status: "pending" | "accepted" | "declined" | "withdrawn"
       report_status: "open" | "investigating" | "resolved" | "dismissed"
-      review_status: "pending" | "approved" | "rejected" | "archived"
+      review_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "archived"
+        | "needs_info"
       reviewer_kind: "ai" | "admin"
       social_comfort: "quiet" | "small_group" | "social" | "flexible"
     }
@@ -1640,7 +1764,13 @@ export const Constants = {
       identity_status: ["pending", "verified", "rejected", "expired"],
       participant_status: ["pending", "accepted", "declined", "withdrawn"],
       report_status: ["open", "investigating", "resolved", "dismissed"],
-      review_status: ["pending", "approved", "rejected", "archived"],
+      review_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "archived",
+        "needs_info",
+      ],
       reviewer_kind: ["ai", "admin"],
       social_comfort: ["quiet", "small_group", "social", "flexible"],
     },
